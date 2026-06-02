@@ -3,7 +3,7 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Build folder serve karo
+// Build folder serve karo 
 app.use(express.static(path.join(__dirname, 'build')));
 
 // Yahan (.*) use karne se ye error nahi aayega
