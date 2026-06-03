@@ -1,4 +1,3 @@
-import axiosInstance from './axios';
 import api from './axios';
 
 export interface RegisterPayload {

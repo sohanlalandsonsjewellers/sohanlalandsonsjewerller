@@ -68,7 +68,7 @@ export default function CheckoutPage() {
       );
 
       // Trigger WhatsApp
-      window.location.href = `whatsapp://send?phone=919682296756&text=${msg}`;
+      window.location.href = `whatsapp://send?phone=916306748500&text=${msg}`;
 
       // Finalize
       clear?.();
