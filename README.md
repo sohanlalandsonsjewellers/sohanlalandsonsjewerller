@@ -128,7 +128,7 @@ POST /auth/register
   "name": "Hariom",
   "email": "example@gmail.com",
   "password": "123456",
-  "phoneNumber": "9682296756",
+  "phoneNumber": "6306748500",
   "adminRole": false
 }
 ```
@@ -155,7 +155,7 @@ JWT decoded fields:
   "id": "...",
   "name": "Hariom",
   "email": "example@gmail.com",
-  "phoneNumber": "9682296756",
+  "phoneNumber": "6306748500",
   "adminRole": true,
   "iat": 1763215904,
   "exp": 1794751904
