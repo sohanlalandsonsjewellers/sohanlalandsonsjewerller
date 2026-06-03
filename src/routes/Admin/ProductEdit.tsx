@@ -221,11 +221,29 @@ export default function ProductEdit() {
   );
 }
 
-function toDataUrl(file: File): Promise<string> {
+async function toDataUrl(file: File): Promise<string> {
   return new Promise((res, rej) => {
     const reader = new FileReader();
-    reader.onload = () => res(String(reader.result));
-    reader.onerror = rej;
     reader.readAsDataURL(file);
+    reader.onload = () => {
+      const img = new Image();
+      img.src = reader.result as string;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        // 🚀 Size control: Jewellery ke liye 600px perfect hai
+        const size = 600; 
+        canvas.width = size;
+        canvas.height = size;
+        
+        const ctx = canvas.getContext("2d");
+        // Cover mode: Image ko center karke crop karega
+        ctx?.drawImage(img, 0, 0, size, size);
+        
+        // 🚀 Quality control: 0.5 (50%) WebP mein best balance hai 60KB ke liye
+        const dataUrl = canvas.toDataURL("image/webp", 0.5); 
+        res(dataUrl);
+      };
+    };
+    reader.onerror = rej;
   });
 }
