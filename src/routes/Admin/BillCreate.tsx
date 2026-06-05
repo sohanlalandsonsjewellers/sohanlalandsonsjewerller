@@ -117,7 +117,8 @@ export default function BillCreate() {
     try {
 
 
-      const res = await createBill(form)
+      await createBill(form)
+
       alert("Bill Created!");
       navigate("/admin/bills");
 
