@@ -117,7 +117,8 @@ export default function BillCreate() {
     try {
 
 
-      
+      await createBill(form)
+
       alert("Bill Created!");
       navigate("/admin/bills");
 
