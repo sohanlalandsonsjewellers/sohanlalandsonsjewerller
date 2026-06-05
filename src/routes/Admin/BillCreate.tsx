@@ -108,6 +108,7 @@ export default function BillCreate() {
   // ------------------------
   // SUBMIT BILL
   // ------------------------
+
   async function handleSubmit() {
 
     if (!form.items.length) {
@@ -116,14 +117,36 @@ export default function BillCreate() {
 
     try {
 
+      const payload = {
 
-      await createBill(form)
+        ...form,
+
+        items: form.items.map((it) => ({
+          name: it.name,
+          price: Number(it.price),
+          qty: Number(it.qty)
+        })),
+
+        discount: Number(form.discount),
+
+        gstPercent: Number(
+          gstEnabled
+            ? form.gstPercent
+            : 0
+        )
+
+      };
+
+      await createBill(payload);
 
       alert("Bill Created!");
+
       navigate("/admin/bills");
 
     } catch (err) {
+
       console.error(err);
+
       alert("Bill Create Failed");
 
     }
