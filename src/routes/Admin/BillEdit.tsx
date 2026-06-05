@@ -18,6 +18,8 @@ export default function BillEdit() {
   const [form, setForm] = useState<any>({
     customerName: "",
     customerPhone: "",
+    customerAddress: "",
+    customerPincode: "",
     customerEmail: "",
     discount: 0,
     gstPercent: 3,
@@ -39,6 +41,8 @@ export default function BillEdit() {
         setForm({
           customerName: bill.customerName,
           customerPhone: bill.customerPhone,
+          customerAddress: bill.customerAddress || "",
+          customerPincode: bill.customerPincode || "",
           customerEmail: bill.customerEmail || "",
           discount: bill.discount,
           gstPercent: bill.gstPercent,
@@ -101,6 +105,27 @@ export default function BillEdit() {
           value={form.customerPhone}
           onChange={(e) =>
             setForm({ ...form, customerPhone: e.target.value })
+          }
+        />
+        <TextField
+          label="Customer Address"
+          value={form.customerAddress}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              customerAddress: e.target.value
+            })
+          }
+        />
+
+        <TextField
+          label="Pincode"
+          value={form.customerPincode}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              customerPincode: e.target.value
+            })
           }
         />
 
