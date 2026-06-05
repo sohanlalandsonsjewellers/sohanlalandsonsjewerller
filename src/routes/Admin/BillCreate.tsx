@@ -25,11 +25,15 @@ type BillItem = {
 type BillForm = {
   customerName: string;
   customerPhone: string;
+
+  customerAddress: string;
+  customerPincode: string;
+
   customerEmail: string;
   discount: number;
   gstPercent: number;
   items: BillItem[];
-};
+}
 
 export default function BillCreate() {
   const navigate = useNavigate();
@@ -40,11 +44,15 @@ export default function BillCreate() {
   const [form, setForm] = useState<BillForm>({
     customerName: "",
     customerPhone: "",
+
+    customerAddress: "",
+    customerPincode: "",
+
     customerEmail: "",
-    discount: 0, // amount
-    gstPercent: 3, // default 3%
-    items: [],
-  });
+    discount: 0,
+    gstPercent: 3,
+    items: []
+  })
 
   const [item, setItem] = useState<BillItem>({
     name: "",
@@ -101,11 +109,24 @@ export default function BillCreate() {
   // SUBMIT BILL
   // ------------------------
   async function handleSubmit() {
-    if (!form.items.length) return alert("Add at least 1 item");
 
-    await createBill(form);
-    alert("Bill Created!");
-    navigate("/admin/bills");
+    if (!form.items.length) {
+      return alert("Add at least 1 item");
+    }
+
+    try {
+
+
+      const res = await createBill(form)
+      alert("Bill Created!");
+      navigate("/admin/bills");
+
+    } catch (err) {
+      console.error(err);
+      alert("Bill Create Failed");
+
+    }
+
   }
 
   return (
@@ -126,6 +147,29 @@ export default function BillCreate() {
             label="Customer Phone"
             value={form.customerPhone}
             onChange={(e) => setForm({ ...form, customerPhone: e.target.value })}
+          />
+          <TextField
+            label="Customer Address"
+            multiline
+            rows={2}
+            value={form.customerAddress}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                customerAddress: e.target.value
+              })
+            }
+          />
+
+          <TextField
+            label="Pincode"
+            value={form.customerPincode}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                customerPincode: e.target.value
+              })
+            }
           />
 
           <TextField

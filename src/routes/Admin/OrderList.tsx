@@ -25,11 +25,10 @@ export default function OrderList() {
         const res = await updateOrderStatus(order.id, status);
 
         if (status === "ACCEPTED" && res.billLink) {
-          // Code mein change karo:
+          // Code mein change karo: customerPhone ko clean karo, aur WhatsApp ke liye text prepare karo
           const cleanPhone = "91" + order.customerPhone.replace(/[^0-9]/g, "").slice(-10);
           const text = `Hello ${order.customerName}, your order #${order.id.slice(-6).toUpperCase()} is ACCEPTED!\n\nTotal: ₹${order.totalAmount}\n\nDownload Bill: ${res.billLink}`;
 
-          // WhatsApp Direct Scheme: Ye browser ko force karta hai ki WhatsApp dhundo
           // Format: whatsapp://send?phone=NUMBER&text=TEXT
           const whatsappAppUrl = `whatsapp://send?phone=${cleanPhone}&text=${encodeURIComponent(text)}`;
 
