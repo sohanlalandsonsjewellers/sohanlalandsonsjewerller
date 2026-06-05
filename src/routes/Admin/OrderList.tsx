@@ -29,7 +29,6 @@ export default function OrderList() {
           const cleanPhone = "91" + order.customerPhone.replace(/[^0-9]/g, "").slice(-10);
           const text = `Hello ${order.customerName}, your order #${order.id.slice(-6).toUpperCase()} is ACCEPTED!\n\nTotal: ₹${order.totalAmount}\n\nDownload Bill: ${res.billLink}`;
 
-          // WhatsApp Direct Scheme: Ye browser ko force karta hai ki WhatsApp dhundo
           // Format: whatsapp://send?phone=NUMBER&text=TEXT
           const whatsappAppUrl = `whatsapp://send?phone=${cleanPhone}&text=${encodeURIComponent(text)}`;
 
