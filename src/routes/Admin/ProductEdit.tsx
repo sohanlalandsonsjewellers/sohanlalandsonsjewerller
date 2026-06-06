@@ -8,6 +8,31 @@ import AdminLayout from "../../components/Admin/AdminLayout";
 
 const categories = ["Gold", "Silver", "1Gram Gold Polished Jewellery"];
 const subCategories = ["Women", "Men", "Baby Boy", "Baby Girl"];
+const numberFieldStyle = {
+
+  "& input[type=number]": {
+
+    MozAppearance: "textfield"
+
+  },
+
+  "& input[type=number]::-webkit-outer-spin-button": {
+
+    WebkitAppearance: "none",
+
+    margin: 0
+
+  },
+
+  "& input[type=number]::-webkit-inner-spin-button": {
+
+    WebkitAppearance: "none",
+
+    margin: 0
+
+  }
+
+}
 
 export default function ProductEdit() {
   const { id } = useParams();
@@ -15,6 +40,7 @@ export default function ProductEdit() {
 
   const [form, setForm] = useState<any>(null);
   const [newPreviews, setNewPreviews] = useState<string[]>([]);
+  const [bannerPreview, setBannerPreview] = useState("")
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -27,6 +53,13 @@ export default function ProductEdit() {
       try {
         const res = await getProductById(id);
         setForm(res.product || res);
+
+        setBannerPreview(
+          res.product
+            ?.bannerImages
+            ?.desktopUrl
+          || ""
+        )
       } catch (err) {
         console.error(err);
         alert("Failed to load product details assets");
@@ -57,7 +90,7 @@ export default function ProductEdit() {
           maxSizeMB: 0.06,            // Limits storage sizes to around 50KB range
           maxWidthOrHeight: 1024,     // Crystal clear bounds resolution grid
           useWebWorker: true,
-          initialQuality: 0.85,       
+          initialQuality: 0.85,
           fileType: "image/webp",     // 🚀 FORCE WEBP TRANSFORMATION ON ADDED IMAGES
           onProgress: (p) => setProgress(Math.round(p)),
         });
@@ -71,6 +104,42 @@ export default function ProductEdit() {
 
     setNewPreviews((prev) => prev.concat(previews));
     setUploading(false);
+  }
+  async function changeBanner(e: any) {
+    const file =
+
+      e.target.files?.[0]
+
+    if (!file) return
+
+    const compressed =
+
+      await imageCompression(
+
+        file,
+
+        {
+
+          maxSizeMB: .08,
+
+          maxWidthOrHeight: 1400,
+
+          fileType: "image/webp"
+
+        }
+
+      )
+
+    const url =
+
+      await toDataUrl(
+        compressed
+      )
+
+    setBannerPreview(
+      url
+    )
+
   }
 
   function removeExistingImage(index: number) {
@@ -89,15 +158,43 @@ export default function ProductEdit() {
       const images = (form.images || []).concat(newPreviews);
 
       const payload = {
+
         name: form.name,
-        category: form.category,
-        subCategory: form.subCategory,
-        price: Number(form.price || 0),
-        weight: Number(form.weight || 0),
-        description: form.description || "",
-        stock: Number(form.stock || 0),
+
+        category:
+          form.category,
+
+        subCategory:
+          form.subCategory,
+
+        price: Number(
+          form.price || 0
+        ),
+
+        weight: Number(
+          form.weight || 0
+        ),
+
+        description:
+          form.description,
+
+        stock: Number(
+          form.stock || 0
+        ),
+
         images,
-      };
+
+        bannerImages: {
+
+          desktopUrl:
+            bannerPreview,
+
+          mobileUrl:
+            bannerPreview
+
+        }
+
+      }
 
       await updateProduct(id!, payload);
       alert("Product updated successfully!");
@@ -135,9 +232,44 @@ export default function ProductEdit() {
           ))}
         </TextField>
 
-        <TextField fullWidth name="price" label="Price" type="number" sx={{ mb: 2 }} value={form.price || ""} onChange={change} />
-        <TextField fullWidth name="weight" label="Weight" type="number" sx={{ mb: 2 }} value={form.weight || ""} onChange={change} />
-        <TextField fullWidth name="stock" label="Stock" type="number" sx={{ mb: 2 }} value={form.stock || ""} onChange={change} />
+        <TextField
+          fullWidth
+          name="price"
+          label="Price"
+          type="number"
+          sx={{
+            mb: 2,
+            ...numberFieldStyle
+          }}
+          value={form.price || ""}
+          onChange={change}
+        />
+
+        <TextField
+          fullWidth
+          name="weight"
+          label="Weight"
+          type="number"
+          sx={{
+            mb: 2,
+            ...numberFieldStyle
+          }}
+          value={form.weight || ""}
+          onChange={change}
+        />
+
+        <TextField
+          fullWidth
+          name="stock"
+          label="Stock"
+          type="number"
+          sx={{
+            mb: 2,
+            ...numberFieldStyle
+          }}
+          value={form.stock || ""}
+          onChange={change}
+        />
 
         {/* EXISTING IMAGES */}
         <Box sx={{ mb: 1, color: "#6E6557" }}>Existing showroom assets:</Box>
@@ -206,12 +338,147 @@ export default function ProductEdit() {
           value={form.description || ""}
           onChange={change}
         />
+        <Box
 
-        <Button 
-          variant="contained" 
-          fullWidth 
-          onClick={submit} 
-          disabled={uploading} 
+          sx={{
+
+            mt: 4,
+
+            p: 3,
+
+            border: "1px solid #E5D5BC",
+
+            borderRadius: "12px",
+
+            background: "#fff"
+
+          }}
+
+        >
+
+          <Typography
+
+            sx={{
+
+              fontWeight: 600,
+
+              mb: 2,
+
+              fontSize: "18px"
+
+            }}
+
+          >
+
+            Banner Image
+
+          </Typography>
+
+
+          <Box
+
+            sx={{
+
+              display: "flex",
+
+              alignItems: "center",
+
+              gap: 3,
+
+              flexWrap: "wrap"
+
+            }}
+
+          >
+
+            <Box
+
+              sx={{
+
+                width: 240,
+
+                height: 140,
+
+                overflow: "hidden",
+
+                borderRadius: "10px",
+
+                border: "1px solid #ddd",
+
+                background: "#f5f5f5"
+
+              }}
+
+            >
+
+              {
+
+                bannerPreview &&
+
+                <img
+
+                  src={bannerPreview}
+
+                  style={{
+
+                    width: "100%",
+
+                    height: "100%",
+
+                    objectFit: "cover"
+
+                  }}
+
+                />
+
+              }
+
+            </Box>
+
+
+            <Button
+
+              variant="contained"
+
+              component="label"
+
+              sx={{
+
+                height: 50,
+
+                px: 3,
+
+                background: "#5C0B1A"
+
+              }}
+
+            >
+
+              Replace Banner
+
+              <input
+
+                hidden
+
+                type="file"
+
+                accept="image/*"
+
+                onChange={changeBanner}
+
+              />
+
+            </Button>
+
+          </Box>
+
+        </Box>
+
+        <Button
+          variant="contained"
+          fullWidth
+          onClick={submit}
+          disabled={uploading}
           sx={{ bgcolor: "#4A0E17", py: 1.5, borderRadius: 0, fontWeight: 600, letterSpacing: "0.1em" }}
         >
           Update Product
@@ -231,16 +498,16 @@ async function toDataUrl(file: File): Promise<string> {
       img.onload = () => {
         const canvas = document.createElement("canvas");
         // 🚀 Size control: Jewellery ke liye 600px perfect hai
-        const size = 600; 
+        const size = 600;
         canvas.width = size;
         canvas.height = size;
-        
+
         const ctx = canvas.getContext("2d");
         // Cover mode: Image ko center karke crop karega
         ctx?.drawImage(img, 0, 0, size, size);
-        
+
         // 🚀 Quality control: 0.5 (50%) WebP mein best balance hai 60KB ke liye
-        const dataUrl = canvas.toDataURL("image/webp", 0.5); 
+        const dataUrl = canvas.toDataURL("image/webp", 0.5);
         res(dataUrl);
       };
     };

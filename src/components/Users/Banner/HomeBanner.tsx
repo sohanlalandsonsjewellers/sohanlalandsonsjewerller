@@ -7,131 +7,266 @@ type Props = {
   category: string;
 };
 
-export default function HomeBanner({ category }: Props) {
-  const [banners, setBanners] = useState<any[]>([]);
-  const [bannerIndex, setBannerIndex] = useState(0);
+export default function HomeBanner({
+  category,
+}: Props) {
 
-  const navigate = useNavigate();
+  const [banners, setBanners] =
+    useState<any[]>([]);
+
+  const [bannerIndex, setBannerIndex] =
+    useState(0);
+
+  const navigate =
+    useNavigate();
 
   useEffect(() => {
+
     let active = true;
 
     (async () => {
+
       try {
-        const res = await getAllPublic({
-          q: "",
-          category,
-        });
 
-        if (active) {
-          const rawProducts = res.products || [];
+        const res =
+          await getAllPublic({
+            q: "",
+            category,
+          });
 
-          const bannerProducts = rawProducts.filter(
+        if (!active) return;
+
+        const rawProducts =
+          res.products || [];
+
+
+        // ONLY PRODUCTS WITH BANNER IMAGE
+
+        const bannerProducts =
+          rawProducts.filter(
             (p: any) =>
-              p.isBanner === true ||
+
               p.bannerImages
+                ?.desktopUrl
           );
 
-          const sourceArray =
-            bannerProducts.length
-              ? bannerProducts
-              : (res.banners || []);
 
-          const uniqueMap: Record<
-            string,
-            any
-          > = {};
+        // REMOVE DUPLICATES (same name)
 
-          sourceArray.forEach(
-            (p: any) => {
-              const key =
-                p.name
-                  .toLowerCase()
-                  .trim();
+        const uniqueMap:
+          Record<string, any> = {};
 
-              if (!uniqueMap[key]) {
+        bannerProducts.forEach(
+          (p: any) => {
+
+            const key =
+              p.name
+                .toLowerCase()
+                .trim();
+
+            if (
+              !uniqueMap[key]
+            ) {
+
+              uniqueMap[key] = p;
+
+            } else {
+
+              const oldDate =
+                new Date(
+                  uniqueMap[key]
+                    .created_at
+                ).getTime();
+
+              const newDate =
+                new Date(
+                  p.created_at
+                ).getTime();
+
+              if (
+                newDate >
+                oldDate
+              ) {
+
                 uniqueMap[key] = p;
-              }
-            }
-          );
 
-          const finalBanners =
-            Object.values(
-              uniqueMap
+              }
+
+            }
+
+          }
+        );
+
+
+        // LATEST FIRST
+
+        const finalBanners =
+
+          Object.values(
+            uniqueMap
+          )
+
+            .sort(
+
+              (
+                a: any,
+                b: any
+              ) =>
+
+                new Date(
+                  b.created_at
+                ).getTime()
+
+                -
+
+                new Date(
+                  a.created_at
+                ).getTime()
+
             );
 
-          setBanners(
-            finalBanners
+
+        setBanners(
+          finalBanners
+        );
+
+
+        // DAY WISE ROTATION
+
+        if (
+          finalBanners.length
+        ) {
+
+          const dayIndex =
+
+            Math.floor(
+
+              Date.now()
+
+              /
+
+              86400000
+
+            )
+
+            %
+
+            finalBanners.length;
+
+
+          setBannerIndex(
+            dayIndex
           );
+
         }
+
       } catch (err) {
+
         console.log(err);
+
       }
+
     })();
 
     return () => {
+
       active = false;
+
     };
+
   }, [category]);
 
+
+
+  // AUTO SLIDE
+
   useEffect(() => {
-    if (!banners.length)
-      return;
+
+    if (
+      !banners.length
+    ) return;
 
     const interval =
       setInterval(() => {
+
         setBannerIndex(
-          (prev) =>
-            (prev + 1) %
+
+          prev =>
+
+            (
+              prev + 1
+            )
+
+            %
+
             banners.length
+
         );
+
       }, 5000);
 
-    return () =>
-      clearInterval(
-        interval
-      );
+    return () => clearInterval(
+      interval
+    );
+
   }, [banners]);
 
-  if (!banners.length)
-    return null;
+
+  if (
+    !banners.length
+  ) return null;
+
 
   const activeProduct =
-    banners[bannerIndex];
+    banners[
+    bannerIndex
+    ];
+
 
   const image =
+
     activeProduct
       ?.bannerImages
-      ?.desktopUrl ||
-    activeProduct
-      ?.images?.[0];
+      ?.desktopUrl;
+
 
   return (
+
     <Box
+
       sx={{
+
         px: {
           xs: 2,
           sm: 2,
-          md: 3,
+          md: 2
         },
 
         pt: {
           xs: 2,
-          md: 0,
-        },
+          md: 0
+        }
+
       }}
+
     >
-      {/* Banner */}
 
       <Box
+
         onClick={() =>
+
           navigate(
+
             `/collection/${encodeURIComponent(
               activeProduct.name
             )}`
+
           )
+
         }
+
         sx={{
+
           position: "relative",
 
           overflow: "hidden",
@@ -140,19 +275,25 @@ export default function HomeBanner({ category }: Props) {
 
           borderRadius: {
             xs: "16px",
-            md: "18px",
+            md: "18px"
           },
 
           height: {
             xs: "320px",
             sm: "420px",
-            md: "520px",
+            md: "500px"
           },
 
-          background: "#000",
+          background: "#000"
+
         }}
+
       >
+
+        {/* BLUR BACKGROUND */}
+
         <Box
+
           sx={{
 
             position: "absolute",
@@ -164,7 +305,8 @@ export default function HomeBanner({ category }: Props) {
 
             backgroundSize: "cover",
 
-            backgroundPosition: "center",
+            backgroundPosition:
+              "center",
 
             filter:
               "blur(18px) brightness(.55)",
@@ -173,10 +315,14 @@ export default function HomeBanner({ category }: Props) {
               "scale(1.08)"
 
           }}
+
         />
 
 
+        {/* MAIN IMAGE */}
+
         <Box
+
           component="img"
 
           src={image}
@@ -194,32 +340,43 @@ export default function HomeBanner({ category }: Props) {
               md: "contain"
             },
 
-            objectPosition: "center",
+            objectPosition:
+              "center",
 
             display: "block",
 
             zIndex: 2
 
           }}
+
         />
 
-        {/* overlay */}
+
+        {/* OVERLAY */}
 
         <Box
+
           sx={{
+
             position: "absolute",
 
             inset: 0,
 
             background:
-              "linear-gradient(to top,rgba(0,0,0,.55),transparent)",
+
+              "linear-gradient(to top,rgba(0,0,0,.55),transparent)"
+
           }}
+
         />
 
-        {/* text */}
+
+        {/* TEXT */}
 
         <Box
+
           sx={{
+
             position: "absolute",
 
             bottom: 30,
@@ -227,41 +384,71 @@ export default function HomeBanner({ category }: Props) {
             left: 25,
 
             color: "#fff",
+
+            zIndex: 3
+
           }}
+
         >
+
           <Typography
+
             sx={{
+
               fontSize: {
+
                 xs: "1.6rem",
-                md: "2.8rem",
+
+                md: "2.8rem"
+
               },
 
               fontFamily:
-                '"Playfair Display", serif',
+
+                '"Playfair Display", serif'
+
             }}
+
           >
+
             {activeProduct.name}
+
           </Typography>
+
 
           <Typography
+
             sx={{
-              opacity: 0.9,
+
+              opacity: .9,
 
               fontSize: {
+
                 xs: 12,
-                md: 15,
-              },
+
+                md: 15
+
+              }
+
             }}
+
           >
+
             {activeProduct.category}
+
           </Typography>
+
         </Box>
+
       </Box>
 
-      {/* dots */}
+
+      {/* DOTS */}
 
       <Box
+
         sx={{
+
           display: "flex",
 
           justifyContent:
@@ -272,46 +459,73 @@ export default function HomeBanner({ category }: Props) {
 
           gap: 1,
 
-          mt: 2,
+          mt: 2
+
         }}
+
       >
-        {banners.map(
-          (_, index) => (
-            <Box
-              key={index}
-              onClick={() =>
-                setBannerIndex(
-                  index
-                )
-              }
-              sx={{
-                width:
-                  bannerIndex ===
+
+        {
+
+          banners.map(
+
+            (_, index) => (
+
+              <Box
+
+                key={index}
+
+                onClick={() => {
+
+                  setBannerIndex(
                     index
-                    ? 20
-                    : 8,
+                  )
 
-                height: 8,
+                }}
 
-                borderRadius:
-                  999,
+                sx={{
 
-                background:
-                  bannerIndex ===
-                    index
-                    ? "#7A1025"
-                    : "#d4c5ad",
+                  width:
 
-                transition:
-                  ".3s",
+                    bannerIndex === index
 
-                cursor:
-                  "pointer",
-              }}
-            />
+                      ? 20
+
+                      : 8,
+
+                  height: 8,
+
+                  borderRadius:
+                    999,
+
+                  background:
+
+                    bannerIndex === index
+
+                      ? "#7A1025"
+
+                      : "#d4c5ad",
+
+                  transition:
+                    ".3s",
+
+                  cursor:
+                    "pointer"
+
+                }}
+
+              />
+
+            )
+
           )
-        )}
+
+        }
+
       </Box>
+
     </Box>
+
   );
+
 }
