@@ -57,7 +57,7 @@ export default function UserHome() {
       <MainNavbar onSearch={handleSearch} />
       <CategoryStrip products={initialProducts} onSelect={handleCategory} />
       <HomeBanner category={filters.category} />
-      <Container maxWidth="lg" sx={{ mt: 6, mb: 8 }}>
+      <Container maxWidth="lg" sx={{ mt: 4, mb: 2 }}>
         {loading ? (
           <Box sx={{ textAlign: "center", py: 6 }}><CircularProgress sx={{ color: "#4A0E17" }} /></Box>
         ) : products.length === 0 ? (
@@ -70,7 +70,28 @@ export default function UserHome() {
           <ProductGrid products={products} />
         )}
       </Container>
-      <FeaturedCollections />
+
+
+      {/* LUXURY SEPARATOR */}
+
+      <Box
+        sx={{
+          background:
+            "linear-gradient(to bottom,#faf8f5,#f5f0e8)",
+
+          pt: 2,
+          pb: 2,
+
+          borderTop:
+            "1px solid rgba(184,155,115,.15)"
+        }}
+      >
+
+        <FeaturedCollections
+          products={products}
+        />
+
+      </Box>
       <UserFooter />
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </Box>
