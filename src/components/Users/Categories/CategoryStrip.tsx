@@ -35,7 +35,7 @@ export default function CategoryStrip({ products, onSelect }: CategoryStripProps
       py: 1.5, 
       px: { xs: 2, sm: 4 },
       bgcolor: '#FDFBF7', 
-      borderBottom: '1px solid #E5D5BC',
+      borderTop: '1px solid #E5D5BC',
       overflowX: 'auto', 
       whiteSpace: 'nowrap',
       WebkitOverflowScrolling: 'touch',
