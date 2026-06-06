@@ -367,7 +367,7 @@ export default function ProductCreate() {
               hidden
 
               type="file"
-e
+              
               accept="image/*"
 
               onChange={
