@@ -367,7 +367,7 @@ export default function ProductCreate() {
               hidden
 
               type="file"
-              
+
               accept="image/*"
 
               onChange={
@@ -386,6 +386,7 @@ export default function ProductCreate() {
               <img
 
                 src={bannerPreview}
+                 alt="banner preview"
 
                 style={{
 
