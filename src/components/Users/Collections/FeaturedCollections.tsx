@@ -1,60 +1,326 @@
-import { Box, Typography } from "@mui/material";
+import React from "react";
+import { Box, Typography, Grid, Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
-export default function FeaturedCollections() {
+type Product = {
+  id?: string;
+  _id?: string;
+  name: string;
+  images: string[];
+};
+
+export default function FeaturedCollections({
+  products = [],
+}: {
+  products?: Product[];
+}) {
+  const navigate = useNavigate();
+
+  if (!products.length) return null;
+
+  const topThree = products.slice(0, 3);
+
+  const goCollection = (name: string) => {
+    navigate(
+      `/collection/${encodeURIComponent(name)}`
+    );
+  };
+
   return (
-    <Box sx={{ my: 5, px: 2, textAlign: "center" }}>
-      
-      {/* Heading */}
-      <Typography
-        sx={{
-          fontFamily: "serif",
-          fontWeight: 600,
-          mb: 1,
-          fontSize: {
-            xs: 20,
-            sm: 24,
-            md: 30,
-          },
-        }}
-      >
-        Find Your Perfect Match
-      </Typography>
+    <Box
+      sx={{
+        py: 10,
+        px: { xs: 2, md: 4 },
+        background:
+          "linear-gradient(to bottom,#faf8f5,#f5f0e8)",
+      }}
+    >
 
-      <Typography
-        sx={{
-          mb: 3,
-          color: "text.secondary",
-          fontSize: { xs: 14, md: 16 },
-        }}
-      >
-        Shop by Categories
-      </Typography>
+      {/* HEADING */}
 
-      {/* Responsive Grid */}
       <Box
         sx={{
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "repeat(2, 1fr)",   // mobile: 2 per row
-            sm: "repeat(3, 1fr)",   // tablet
-            md: "repeat(4, 1fr)",   // desktop
-          },
-          gap: 2,
+          textAlign: "center",
+          mb: 6,
         }}
       >
-        {[1, 2, 3, 4].map((item) => (
-          <Box
-            key={item}
-            sx={{
-              padding: 2,
-              width: "100%",
-              aspectRatio: "1 / 1", // 👈 perfect square
-              background: "#eee",
-              borderRadius: 2,
-            }}
-          />
-        ))}
+
+        <Typography
+          sx={{
+            fontSize: {
+              xs: "2rem",
+              md: "3rem",
+            },
+
+            fontFamily:
+              '"Playfair Display", serif',
+
+            color: "#4A0E17",
+
+            fontWeight: 500,
+          }}
+        >
+          Sohan Lal & Sons Collection
+        </Typography>
+
+        <Typography
+          sx={{
+            color: "#7b7265",
+            mt: 1,
+            fontSize: "1rem",
+          }}
+        >
+          Explore our newly launched collection
+        </Typography>
+
       </Box>
+
+
+      {/* MAIN GRID */}
+
+      <Grid
+        container
+        spacing={1.5}
+        sx={{
+          maxWidth: "980px",
+          mx: "auto",
+          alignItems: "stretch"
+        }}
+      >
+
+        {/* BIG LEFT CARD */}
+
+        {topThree[0] && (
+
+          <Grid
+            size={{
+              xs: 12,
+              md: 6,
+            }}
+          >
+
+            <LuxuryCard
+              product={topThree[0]}
+              hheight={520}
+              large
+              onClick={goCollection}
+            />
+
+          </Grid>
+
+        )}
+
+        {/* RIGHT */}
+
+        <Grid
+          size={{
+            xs: 12,
+            md: 6,
+          }}
+        >
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+            }}
+          >
+
+            {topThree
+              .slice(1, 3)
+              .map((p) => (
+
+                <LuxuryCard
+                  key={p.id || p._id}
+                  product={p}
+                  height={250}
+                  onClick={goCollection}
+                />
+
+              ))}
+
+          </Box>
+
+        </Grid>
+
+      </Grid>
+
     </Box>
   );
+}
+
+
+
+function LuxuryCard({
+  product,
+  height,
+  onClick,
+  large = false,
+}: any) {
+
+  return (
+
+    <Box
+
+      onClick={() =>
+        onClick(product.name)
+      }
+
+      sx={{
+
+        position: "relative",
+
+        height,
+
+        overflow: "hidden",
+
+        borderRadius: "18px",
+
+        cursor: "pointer",
+
+        boxShadow:
+          "0 10px 40px rgba(0,0,0,.12)",
+
+        "&:hover img": {
+
+          transform: "scale(1.05)"
+
+        }
+
+      }}
+
+    >
+
+      <Box
+
+        component="img"
+
+        src={product.images?.[0]}
+
+        sx={{
+
+          width: "100%",
+
+          height: "100%",
+
+          objectFit: "cover",
+
+          transition: ".5s"
+
+        }}
+
+      />
+
+
+      <Box
+
+        sx={{
+
+          position: "absolute",
+
+          inset: 0,
+
+          background:
+            "linear-gradient(to top,rgba(0,0,0,.65),transparent 45%)"
+
+        }}
+
+      />
+
+
+      <Box
+
+        sx={{
+
+          position: "absolute",
+
+          left: 30,
+
+          bottom: 30,
+
+          color: "#fff"
+
+        }}
+
+      >
+
+        <Typography
+
+          sx={{
+
+            fontSize:
+              large
+                ? "3rem"
+                : "2rem",
+
+            fontFamily:
+              '"Playfair Display", serif',
+
+            lineHeight: 1.1,
+
+            mb: 1
+
+          }}
+
+        >
+
+          {product.name}
+
+        </Typography>
+
+
+        <Typography
+
+          sx={{
+
+            opacity: .9,
+
+            mb: 2,
+
+            letterSpacing: 1
+
+          }}
+
+        >
+
+          Luxury Jewellery Collection
+
+        </Typography>
+
+
+        <Button
+
+          variant="outlined"
+
+          sx={{
+
+            borderColor: "#d9b46a",
+
+            color: "#f4d38b",
+
+            borderRadius: 0,
+
+            px: 3,
+
+            "&:hover": {
+
+              borderColor: "#f4d38b"
+
+            }
+
+          }}
+
+        >
+
+          Explore →
+
+        </Button>
+
+      </Box>
+
+    </Box>
+
+  )
+
 }

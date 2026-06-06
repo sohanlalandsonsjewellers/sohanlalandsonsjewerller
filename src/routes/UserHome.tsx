@@ -70,7 +70,28 @@ export default function UserHome() {
           <ProductGrid products={products} />
         )}
       </Container>
-      <FeaturedCollections />
+
+
+      {/* LUXURY SEPARATOR */}
+
+      <Box
+        sx={{
+          background:
+            "linear-gradient(to bottom,#faf8f5,#f5f0e8)",
+
+          pt: 10,
+          pb: 3,
+
+          borderTop:
+            "1px solid rgba(184,155,115,.25)"
+        }}
+      >
+
+        <FeaturedCollections
+          products={products}
+        />
+
+      </Box>
       <UserFooter />
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </Box>
