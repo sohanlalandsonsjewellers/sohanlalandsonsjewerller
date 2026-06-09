@@ -10,6 +10,7 @@ export default function Sidebar() {
     { label: "Products", path: "/admin/products" },
     { label: "Bills", path: "/admin/bills" },
     { label: "Orders", path: "/admin/orders" }, // <--- Ye add kiya
+    {label:"Feedbacks",path:"/admin/feedbacks"}
   ];
 
   return (
