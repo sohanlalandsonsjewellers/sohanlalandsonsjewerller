@@ -386,6 +386,7 @@ export default function ProductCreate() {
               <img
 
                 src={bannerPreview}
+                 alt="banner preview"
 
                 style={{
 

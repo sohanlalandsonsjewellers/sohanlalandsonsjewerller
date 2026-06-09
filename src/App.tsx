@@ -32,6 +32,8 @@ import BillView from "./routes/Admin/BillView";
 import OrderList from "./routes/Admin/OrderList";
 import CheckoutPage from "./components/Users/Cart/CheckoutPage";
 import ProtectedRoute from "./routes/ProtectedRoute";
+
+import FeedbackList from "./routes/Admin/FeedbackList";
 import { ToastContainer } from "react-toastify";
 import MyOrders from "./routes/MyOrders";
 import MyProfile from "./routes/MyProfile";
@@ -94,6 +96,8 @@ export default function App() {
         <Route path="/my-orders" element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
         <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
         <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
+
+        <Route path="/admin/feedbacks" element={user?.adminRole ? <FeedbackList /> : <Navigate to="/" replace />} />
 
         {/* FALLBACK */}
         <Route path="*" element={<Navigate to="/" replace />} />

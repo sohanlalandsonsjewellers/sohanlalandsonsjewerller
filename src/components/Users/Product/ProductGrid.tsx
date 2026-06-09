@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid as Grid, Box, Typography } from '@mui/material'; // Grid2 v6 ke liye
+import { Grid, Box, Typography } from '@mui/material'; // Grid2 v6 ke liye
 import ProductCard from './ProductCard';
 
 interface ProductGridProps {

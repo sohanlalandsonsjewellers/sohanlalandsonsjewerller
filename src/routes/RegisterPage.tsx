@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Box, TextField, Button, Typography, Alert, Container, Divider } from "@mui/material";
+import { Autocomplete } from "@mui/material";
 import { useAuth } from "../contexts/AuthProvider";
 
 export default function RegisterPage() {
@@ -10,8 +11,14 @@ export default function RegisterPage() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
   const [pincode, setPincode] = useState("");
+  // Inside RegisterPage.tsx
+  const [area, setArea] = useState("");
+  const [areaList, setAreaList] = useState<string[]>([]);
+
+  // ✅ Auto-fetch logic
+
   const [alternatePhone, setAlternatePhone] = useState("");
-  
+
   const [error, setError] = useState<string | null>(null);
 
   // 🚀 NEW STATE: Password max limit dynamic alert indicator trigger
@@ -23,7 +30,7 @@ export default function RegisterPage() {
   // 🚀 1. SMART PASSWORD VALIDATOR ENGINE (Blocks input and alerts user at exactly 15 chars)
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    
+
     if (value.length <= 15) {
       setPassword(value);
       setPasswordMaxError(false); // Reset warning if they delete characters
@@ -50,10 +57,20 @@ export default function RegisterPage() {
   };
 
   // 🚀 4. PINCODE VALIDATOR ENGINE
-  const handlePincodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (/^\d*$/.test(value) && value.length <= 6) {
-      setPincode(value);
+  const handlePincodeChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setPincode(val);
+
+    if (val.length === 6) {
+      try {
+        const res = await fetch(`https://api.postalpincode.in/pincode/${val}`);
+        const data = await res.json();
+        if (data[0].Status === "Success") {
+          const offices = data[0].PostOffice.map((po: any) => po.Name);
+          setAreaList(offices); // Dropdown ke liye list
+          setArea(offices[0]);  // Default first one
+        }
+      } catch (e) { console.error("API error"); }
     }
   };
 
@@ -62,14 +79,15 @@ export default function RegisterPage() {
     setError(null);
 
     try {
-      await register({ 
-        name, 
-        email, 
-        password, 
-        phoneNumber, 
-        address, 
-        pincode, 
-        alternatePhone 
+      await register({
+        name,
+        email,
+        password,
+        phoneNumber,
+        address,
+        pincode,
+        area, // ✅ Area ab pass ho raha hai
+        alternatePhone
       });
       navigate("/login");
     } catch (err: any) {
@@ -77,14 +95,15 @@ export default function RegisterPage() {
     }
   }
 
-  // 🚀 5. GATEKEEPER VALIDATION CHECK
-  const isFormInvalid = 
-    !name.trim() || 
-    !email.trim() || 
-    !address.trim() || 
-    phoneNumber.length !== 10 ||              
-    pincode.length !== 6 ||                   
-    password.length < 6 || password.length > 15; 
+  // 🚀 5. GATEKEEPER VALIDATION CHECK (Updated area validation)
+  const isFormInvalid =
+    !name.trim() ||
+    !email.trim() ||
+    !address.trim() ||
+    phoneNumber.length !== 10 ||
+    pincode.length !== 6 ||
+    area.length === 0 || // ✅ Area check added
+    password.length < 6 || password.length > 15;
 
   return (
     <Box
@@ -93,27 +112,27 @@ export default function RegisterPage() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        bgcolor: "#FDFBF7", 
+        bgcolor: "#FDFBF7",
         py: { xs: 4, md: 6 },
         px: 2
       }}
     >
-      <Container 
-        maxWidth="sm" 
+      <Container
+        maxWidth="sm"
         sx={{
           p: { xs: 3, md: 5 },
-          bgcolor: "#FFFFFF", 
-          border: "1px solid rgba(229, 213, 188, 0.6)", 
-          borderRadius: 0, 
-          boxShadow: "0px 12px 40px rgba(74, 14, 23, 0.03)" 
+          bgcolor: "#FFFFFF",
+          border: "1px solid rgba(229, 213, 188, 0.6)",
+          borderRadius: 0,
+          boxShadow: "0px 12px 40px rgba(74, 14, 23, 0.03)"
         }}
       >
-        <Typography 
-          variant="h4" 
-          align="center" 
-          sx={{ 
-            fontWeight: 600, 
-            fontFamily: '"Playfair Display", serif', 
+        <Typography
+          variant="h4"
+          align="center"
+          sx={{
+            fontWeight: 600,
+            fontFamily: '"Playfair Display", serif',
             color: "#4A0E17",
             letterSpacing: "0.02em",
             mb: 1
@@ -121,16 +140,16 @@ export default function RegisterPage() {
         >
           Create Account
         </Typography>
-        
-        <Typography 
-          variant="body2" 
-          align="center" 
-          sx={{ 
-            color: "#6E6557", 
+
+        <Typography
+          variant="body2"
+          align="center"
+          sx={{
+            color: "#6E6557",
             fontFamily: '"Montserrat", sans-serif',
             letterSpacing: "0.05em",
             fontSize: "0.8rem",
-            mb: 4 
+            mb: 4
           }}
         >
           Join our premium digital showroom experience.
@@ -138,21 +157,21 @@ export default function RegisterPage() {
 
         {error && <Alert severity="error" sx={{ mb: 3, borderRadius: 0 }}>{error}</Alert>}
 
-        <Box 
-          component="form" 
+        <Box
+          component="form"
           onSubmit={handleSubmit}
           sx={{
             "& .MuiOutlinedInput-root": {
-              borderRadius: 0, 
-              bgcolor: "#FAF8F5", 
+              borderRadius: 0,
+              bgcolor: "#FAF8F5",
               "& fieldset": { borderColor: "rgba(229, 213, 188, 0.5)" },
               "&:hover fieldset": { borderColor: "#6E6557" },
               "&.Mui-focused fieldset": { borderColor: "#4A0E17" },
-              "& input": { 
+              "& input": {
                 color: "#1A1A1A !important",
                 "&:-webkit-autofill": {
-                  WebkitBoxShadow: "0 0 0 100px #FAF8F5 inset !important", 
-                  WebkitTextFillColor: "#1A1A1A !important", 
+                  WebkitBoxShadow: "0 0 0 100px #FAF8F5 inset !important",
+                  WebkitTextFillColor: "#1A1A1A !important",
                   transition: "background-color 5000s ease-in-out 0s"
                 }
               },
@@ -173,69 +192,82 @@ export default function RegisterPage() {
         >
           <TextField label="Full Name" placeholder="Enter your full name" value={name} onChange={(e) => setName(e.target.value)} fullWidth required sx={{ mb: 2.5 }} />
           <TextField label="Email Address" placeholder="name@example.com" type="email" value={email} onChange={(e) => setEmail(e.target.value)} fullWidth required sx={{ mb: 2.5 }} />
-          
+
           {/* 🚀 🔥 DYNAMIC PASSWORD ENGINE DETECTOR */}
-          <TextField 
-            label="Password" 
-            placeholder="6 to 15 characters" 
-            type="password" 
-            value={password} 
+          <TextField
+            label="Password"
+            placeholder="6 to 15 characters"
+            type="password"
+            value={password}
             onChange={handlePasswordChange} // Connected to new alert framework logic
-            fullWidth 
-            required 
+            fullWidth
+            required
             helperText={
-              passwordMaxError 
-                ? "🔒 Maximum limit reached! Password cannot exceed 15 characters." 
-                : (password && password.length < 6) 
-                  ? "Password must be at least 6 characters long" 
+              passwordMaxError
+                ? "🔒 Maximum limit reached! Password cannot exceed 15 characters."
+                : (password && password.length < 6)
+                  ? "Password must be at least 6 characters long"
                   : ""
             }
             error={Boolean((password && password.length < 6) || passwordMaxError)}
-            sx={{ mb: 2.5 }} 
+            sx={{ mb: 2.5 }}
           />
 
-          <TextField 
-            label="Primary Phone Number" 
-            placeholder="10-digit mobile number" 
-            value={phoneNumber} 
-            onChange={handlePhoneChange} 
-            fullWidth 
-            required 
+          <TextField
+            label="Primary Phone Number"
+            placeholder="10-digit mobile number"
+            value={phoneNumber}
+            onChange={handlePhoneChange}
+            fullWidth
+            required
             helperText={phoneNumber && phoneNumber.length !== 10 ? "Must be exactly 10 digits" : ""}
             error={Boolean(phoneNumber && phoneNumber.length !== 10)}
-            sx={{ mb: 2.5 }} 
-          />
-          
-          <TextField label="Full Delivery Address" placeholder="House No., Street Area, Landmark, City" value={address} onChange={(e) => setAddress(e.target.value)} fullWidth required multiline rows={3} sx={{ mb: 2.5 }} />
-          
-          <TextField 
-            label="Area Pincode" 
-            placeholder="6-Digit Postal Code" 
-            value={pincode} 
-            onChange={handlePincodeChange} 
-            fullWidth 
-            required 
-            helperText={pincode && pincode.length !== 6 ? "Must be exactly 6 digits" : ""}
-            error={Boolean(pincode && pincode.length !== 6)}
-            sx={{ mb: 2.5 }} 
+            sx={{ mb: 2.5 }}
           />
 
-          <TextField 
-            label="Alternate Number (Optional)" 
-            placeholder="Backup contact number (Max 10 digits)" 
-            value={alternatePhone} 
-            onChange={handleAlternatePhoneChange} 
-            fullWidth 
-            sx={{ mb: 4 }} 
+          <TextField label="Full Delivery Address" placeholder="House No., Street Area, Landmark, City" value={address} onChange={(e) => setAddress(e.target.value)} fullWidth required multiline rows={3} sx={{ mb: 2.5 }} />
+
+          <TextField
+            label="Area Pincode"
+            value={pincode}
+            onChange={handlePincodeChange}
+            fullWidth required sx={{ mb: 2.5 }}
+          />
+          <Autocomplete
+            options={areaList}
+            value={area}
+            onChange={(event, newValue) => setArea(newValue || "")}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Select Area"
+                placeholder="Select your area from list"
+                required
+                sx={{
+                  mb: 2.5,
+                  "& .MuiOutlinedInput-root": { borderRadius: 0, bgcolor: "#FAF8F5" }
+                }}
+              />
+            )}
+          />
+
+
+          <TextField
+            label="Alternate Number (Optional)"
+            placeholder="Backup contact number (Max 10 digits)"
+            value={alternatePhone}
+            onChange={handleAlternatePhoneChange}
+            fullWidth
+            sx={{ mb: 4 }}
           />
 
           <Button
             type="submit"
             fullWidth
             variant="contained"
-            disabled={isFormInvalid} 
+            disabled={isFormInvalid}
             sx={{
-              backgroundColor: "#4A0E17", 
+              backgroundColor: "#4A0E17",
               color: "#FDFBF7",
               fontWeight: 600,
               fontSize: "0.9rem",
@@ -245,7 +277,7 @@ export default function RegisterPage() {
               boxShadow: "none",
               transition: "all 0.3s ease",
               "&.Mui-disabled": {
-                backgroundColor: "rgba(74, 14, 23, 0.3) !important", 
+                backgroundColor: "rgba(74, 14, 23, 0.3) !important",
                 color: "rgba(253, 251, 247, 0.6) !important"
               },
               "&:hover": { backgroundColor: "#2C050B", boxShadow: "none" },
