@@ -25,3 +25,11 @@ export const getAllFeedbacks = async () => {
   const res = await axiosInstance.get("/feedback/all");
   return res.data;
 };
+
+export const deleteFeedback = async(id:string)=>{
+
+  const res =
+    await axiosInstance.delete(`/feedback/delete/${id}`);
+    return res.data;
+
+};
