@@ -8,6 +8,8 @@ import ProductGrid from "../components/Users/Product/ProductGrid";
 import { Container, Box, CircularProgress, Typography } from "@mui/material";
 import { getAllPublic } from "../api/product";
 import CartDrawer from "../components/Users/Cart/CartDrawer";
+// ✅ Feedback Section Import
+import FeedbackSection from "../components/Users/Feedback/FeedbackSection";
 
 export default function UserHome() {
   // const { user } = useAuth();
@@ -92,6 +94,10 @@ export default function UserHome() {
         />
 
       </Box>
+
+      {/* ✅ FEEDBACK SECTION PLACED HERE */}
+      <FeedbackSection />
+
       <UserFooter />
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </Box>
