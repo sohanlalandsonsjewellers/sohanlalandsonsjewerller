@@ -48,23 +48,12 @@ export default function MainFooter() {
       sx={{
         position: "relative",
         background: "#1a0004",
-        overflow: "hidden"
+        pt: 5, // Top padding thoda badha diya taaki curve hataane ke baad space dikhe
+        pb: 3,
+        borderTop: "2px solid rgba(212,175,55,0.35)" // Clean straight gold border
       }}
     >
-      {/* TOP WAVE — clean, no white gap */}
-      <Box sx={{ lineHeight: 0, display: "block", mt: "-1px", position: "relative" }}>
-        <svg viewBox="0 0 1440 70" xmlns="http://www.w3.org/2000/svg" style={{ display: "block", width: "100%", height: "70px" }} preserveAspectRatio="none">
-          {/* Flat dark left and right bars */}
-          <rect x="0" y="0" width="560" height="70" fill="#1a0004" />
-          <rect x="880" y="0" width="560" height="70" fill="#1a0004" />
-          {/* Dark filled arch going down in center — no gap, no white */}
-          <path d="M560,0 Q620,0 660,40 Q690,68 720,68 Q750,68 780,40 Q820,0 880,0 L880,70 L560,70 Z" fill="#1a0004" />
-          {/* Gold border stroke on top edge */}
-          <path d="M0,0 L560,0 Q620,0 660,40 Q690,68 720,68 Q750,68 780,40 Q820,0 880,0 L1440,0" fill="none" stroke="rgba(212,175,55,0.6)" strokeWidth="1.5" />
-        </svg>
-      </Box>
-
-      <Container maxWidth="lg" sx={{ pb: 3 }}>
+      <Container maxWidth="lg">
 
         {/* LOGO — center, compact */}
         <Box sx={{ textAlign: "center", mb: 2 }}>
@@ -83,13 +72,13 @@ export default function MainFooter() {
         </Box>
 
         {/* DIVIDER */}
-        <Box sx={{ height: "1px", background: "linear-gradient(to right, transparent, rgba(212,175,55,0.4) 20%, rgba(212,175,55,0.4) 80%, transparent)", mb: 2.5 }} />
+        <Box sx={{ height: "1px", background: "linear-gradient(to right, transparent, rgba(212,175,55,0.4) 20%, rgba(212,175,55,0.4) 80%, transparent)", mb: 3 }} />
 
-        {/* MAIN ROW — QR + 3 link columns + contact — all in one row */}
+        {/* MAIN ROW */}
         <Grid container spacing={3}>
 
           {/* QR */}
-          <Grid size={{ xs: 12, sm: 3 }}>
+           <Grid size={{ xs: 12, sm: 3 }}>
             <ColHead>Download App</ColHead>
             <Box sx={{ display: "inline-block", p: 1, background: "#fff", borderRadius: "8px", border: "2px solid #D4AF37" }}>
               <QRCode value="http://localhost:3000/" size={110} />
@@ -98,7 +87,6 @@ export default function MainFooter() {
               Scan to visit our website
             </Typography>
 
-            {/* Social icons here — like Tanishq puts them in same column area */}
             <Stack direction="row" spacing={0.8} sx={{ mt: 1.5 }}>
               {[<WhatsApp key="w" />, <Instagram key="i" />, <Facebook key="f" />, <YouTube key="y" />].map((icon, i) => (
                 <IconButton
@@ -117,7 +105,7 @@ export default function MainFooter() {
           </Grid>
 
           {/* USEFUL LINKS */}
-          <Grid size={{ xs: 12, sm: 2 }}>
+          <Grid size={{ xs: 12, sm: 3 }}>
             <ColHead>Useful Links</ColHead>
             <FooterLink to="/">Home</FooterLink>
             <FooterLink to="/new-arrivals">New Arrivals</FooterLink>
@@ -128,7 +116,7 @@ export default function MainFooter() {
           </Grid>
 
           {/* INFORMATION */}
-          <Grid size={{ xs: 12, sm: 2.5 }}>
+          <Grid size={{ xs: 12, sm: 3 }}>
             <ColHead>Information</ColHead>
             <FooterLink to="/privacy-policy">Privacy Policy</FooterLink>
             <FooterLink to="/terms-and-conditions">Terms & Conditions</FooterLink>
@@ -139,7 +127,7 @@ export default function MainFooter() {
           </Grid>
 
           {/* CONTACT */}
-          <Grid size={{ xs: 12, sm: 4.5 }}>
+          <Grid size={{ xs: 12, sm: 3 }}>
             <ColHead>Contact Us</ColHead>
 
             <Box sx={{ display: "flex", gap: 1, mb: 1, alignItems: "flex-start" }}>
@@ -187,32 +175,18 @@ export default function MainFooter() {
         {/* BOTTOM BAR */}
         <Box
           sx={{
-            mt: 2.5,
+            mt: 4,
             pt: 2,
             borderTop: "1px solid rgba(212,175,55,0.15)",
-            display: "flex",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: 1
+            textAlign: "center"
           }}
         >
-          <Typography sx={{ color: "#E6C46A", fontSize: 11.5, textAlign: "center", width: "100%" }}>
+          <Typography sx={{ color: "#E6C46A", fontSize: 11.5 }}>
             © 2026 Sohan Lal & Son's Jewellers. All Rights Reserved.
           </Typography>
         </Box>
 
       </Container>
-
-      {/* BOTTOM WAVE — clean Tanishq style */}
-      <Box sx={{ lineHeight: 0, display: "block", mb: "-1px" }}>
-        <svg viewBox="0 0 1440 70" xmlns="http://www.w3.org/2000/svg" style={{ display: "block", width: "100%", height: "70px" }} preserveAspectRatio="none">
-          {/* Full dark background */}
-          <rect width="1440" height="70" fill="#1a0004" />
-          {/* Gold border stroke — arch going UP in center */}
-          <path d="M0,70 L560,70 Q620,70 660,30 Q690,0 720,0 Q750,0 780,30 Q820,70 880,70 L1440,70" fill="none" stroke="rgba(212,175,55,0.45)" strokeWidth="1.5" />
-        </svg>
-      </Box>
-
     </Box>
   );
 }

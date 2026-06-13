@@ -2,10 +2,6 @@ import PolicyPage from "../PolicyPage";
 
 const sections = [
   {
-    title: "Exchange Eligibility",
-    content: "Products can be exchanged within 7 days of delivery. The item must be unused, unworn, and in original condition with all tags, packaging, and authenticity certificates intact. Exchange requests raised after 7 days will not be accepted."
-  },
-  {
     title: "Exchange Process",
     content: "To initiate an exchange, contact us at sohanlalandsonsjewellers@gmail.com or call +91 96822 96756 with your order ID and reason for exchange. Our team will verify and guide you through the process within 24 hours."
   },

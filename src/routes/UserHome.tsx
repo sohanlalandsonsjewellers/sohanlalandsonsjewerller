@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useState, useMemo } from "react";
+import { useCallback, useEffect, useState } from "react";
 import MainNavbar from "../components/Users/Navbar/MainNavbar";
 import HomeBanner from "../components/Users/Banner/HomeBanner";
 import CategoryStrip from "../components/Users/Categories/CategoryStrip";
 import FeaturedCollections from "../components/Users/Collections/FeaturedCollections";
 import UserFooter from "../components/Users/Footer/MainFooter";
 import ProductGrid from "../components/Users/Product/ProductGrid";
-import { Container, Box, CircularProgress, Typography } from "@mui/material";
+import { Container, Box, CircularProgress } from "@mui/material";
 import { getAllPublic } from "../api/product";
 import CartDrawer from "../components/Users/Cart/CartDrawer";
 import FeedbackSection from "../components/Users/Feedback/FeedbackSection";
