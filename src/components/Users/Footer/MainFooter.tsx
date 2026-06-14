@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Box, Container, Grid, IconButton, Typography, Stack } from "@mui/material";
+import { Box, Container, Grid, Typography, Stack } from "@mui/material";
 import { WhatsApp, Instagram, Facebook, YouTube, LocationOn, Phone, Email } from "@mui/icons-material";
 import QRCode from "react-qr-code";
 import logo from "./logo.png";
