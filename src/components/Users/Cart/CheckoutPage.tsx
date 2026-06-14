@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Box, Typography, Button, CircularProgress } from "@mui/material";
+import { ArrowBackIos, WhatsApp, VerifiedUser, LocalShippingOutlined, PaymentsOutlined } from "@mui/icons-material";
 import { useCart } from "../../../contexts/CartProvider";
 import { useAuth } from "../../../contexts/AuthProvider";
 import { useNavigate } from "react-router-dom";
@@ -250,11 +251,27 @@ Date: ${new Date(order.createdAt).toLocaleString()}`
 
         gap: 3,
 
-        px: 2
+        px: 2,
+
+        position: "relative"
 
       }}
 
     >
+
+      <Button
+        startIcon={<ArrowBackIos sx={{ fontSize: '0.62rem !important' }} />}
+        onClick={() => navigate(-1)}
+        sx={{
+          position: "absolute",
+          top: 16,
+          left: 16,
+          color: "#6E6557",
+          fontSize: "0.7rem"
+        }}
+      >
+        BACK
+      </Button>
 
       <Typography
 
@@ -410,6 +427,47 @@ Date: ${new Date(order.createdAt).toLocaleString()}`
 
         </Box>
 
+      </Box>
+
+
+      <Box
+        sx={{
+          width: "100%",
+          maxWidth: "420px",
+          background: "#F7F1E9",
+          border: "1px solid #e5d7c1",
+          borderRadius: "12px",
+          padding: "16px 18px",
+          display: "flex",
+          flexDirection: "column",
+          gap: 1.2
+        }}
+      >
+        <Typography sx={{ fontWeight: 700, color: "#4A0E17", fontSize: "0.9rem", display: "flex", alignItems: "center", gap: 1 }}>
+          <WhatsApp sx={{ fontSize: "1.1rem", color: "#25D366" }} />
+          How "Order via WhatsApp" Works
+        </Typography>
+
+        <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1 }}>
+          <VerifiedUser sx={{ fontSize: "1.1rem", color: "#4A0E17", mt: "2px" }} />
+          <Typography sx={{ fontSize: "0.82rem", color: "#5C5246" }}>
+            Aapka order summary humare store ko WhatsApp par seedha bhej diya jaayega — humari team usse verify karke confirm karegi.
+          </Typography>
+        </Box>
+
+        <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1 }}>
+          <PaymentsOutlined sx={{ fontSize: "1.1rem", color: "#4A0E17", mt: "2px" }} />
+          <Typography sx={{ fontSize: "0.82rem", color: "#5C5246" }}>
+            Koi advance payment abhi nahi karni — payment confirmation ke baad hi karni hogi, jiska tareeka WhatsApp par bataya jaayega.
+          </Typography>
+        </Box>
+
+        <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1 }}>
+          <LocalShippingOutlined sx={{ fontSize: "1.1rem", color: "#4A0E17", mt: "2px" }} />
+          <Typography sx={{ fontSize: "0.82rem", color: "#5C5246" }}>
+            Confirmation ke baad order process hoga aur shipping details WhatsApp par share ki jaayengi.
+          </Typography>
+        </Box>
       </Box>
 
 

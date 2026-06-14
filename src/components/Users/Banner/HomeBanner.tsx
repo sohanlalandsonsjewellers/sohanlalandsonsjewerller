@@ -101,31 +101,14 @@ export default function HomeBanner({
         // LATEST FIRST
 
         const finalBanners =
-
-          Object.values(
-            uniqueMap
-          )
-
+          Object.values(uniqueMap)
             .sort(
-
-              (
-                a: any,
-                b: any
-              ) =>
-
-                new Date(
-                  b.created_at
-                ).getTime()
-
+              (a: any, b: any) =>
+                new Date(a.created_at).getTime()
                 -
-
-                new Date(
-                  a.created_at
-                ).getTime()
-
-            );
-
-
+                new Date(b.created_at).getTime()
+            )
+            .slice(-5);
         setBanners(
           finalBanners
         );

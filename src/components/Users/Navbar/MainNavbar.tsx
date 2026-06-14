@@ -20,27 +20,25 @@ export default function MainNavbar({ onSearch, allProducts = [] }: MainNavbarPro
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  // 1. Dynamic Categories & Products Logic
+  // 1. Dynamic Product Name Search Logic (categories excluded intentionally)
   const searchResults = useMemo(() => {
     if (!searchVal) return { categories: [], products: [] };
-    const uniqueCats = Array.from(new Set(allProducts.map(p => p.category))).filter(Boolean);
-    const filteredCats = uniqueCats.filter(c => c.toLowerCase().includes(searchVal.toLowerCase()));
-    
+
     const filteredProds = allProducts
       .filter(p => p.name.toLowerCase().includes(searchVal.toLowerCase()))
       .filter((v, i, a) => a.findIndex(t => t.name === v.name) === i)
-      .filter(p => !filteredCats.some(cat => p.name.toLowerCase().includes(cat.toLowerCase())))
       .slice(0, 5);
 
-    return { categories: filteredCats, products: filteredProds };
+    return { categories: [], products: filteredProds };
   }, [searchVal, allProducts]);
 
   const handleNavigation = (path: string) => {
     setSearchVal("");
     setAnchorEl(null);
-    if (window.location.pathname !== '/') {
-      navigate('/');
-      setTimeout(() => navigate(path), 100);
+    if (window.location.pathname === path) {
+      // Already on this exact collection page - force a refresh of route state
+      navigate('/', { replace: true });
+      window.requestAnimationFrame(() => navigate(path));
     } else {
       navigate(path);
     }
@@ -82,7 +80,7 @@ export default function MainNavbar({ onSearch, allProducts = [] }: MainNavbarPro
                   ))}
                   {searchResults.categories.length > 0 && searchResults.products.length > 0 && <Divider />}
                   {searchResults.products.map(p => (
-                    <ListItem key={p.id} onClick={() => handleNavigation(`/product/${p.id}`)} sx={{ '&:hover': { bgcolor: '#f5f5f5' } }}>
+                    <ListItem key={p.id} onClick={() => handleNavigation(`/collection/${p.name}`)} sx={{ '&:hover': { bgcolor: '#f5f5f5' } }}>
                       <ListItemText primary={p.name} primaryTypographyProps={{ fontSize: '0.85rem' }} />
                     </ListItem>
                   ))}
