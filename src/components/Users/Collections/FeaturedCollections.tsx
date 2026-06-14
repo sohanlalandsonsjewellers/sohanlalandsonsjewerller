@@ -18,7 +18,60 @@ export default function FeaturedCollections({
 
   if (!products.length) return null;
 
-  const topThree = products.slice(0, 3);
+  const uniqueMap: Record<string, any> = {};
+
+  products.forEach((p: any) => {
+
+    const key =
+      p.name
+        ?.toLowerCase()
+        ?.trim();
+
+    if (!uniqueMap[key]) {
+      uniqueMap[key] = p;
+    } else {
+      const oldDate =
+        new Date(
+          uniqueMap[key].created_at
+        ).getTime();
+      const newDate =
+        new Date(
+          p.created_at
+        ).getTime();
+      if (newDate > oldDate) {
+        uniqueMap[key] = p;
+      }
+
+    }
+
+  });
+
+  const latestProducts =
+    Object.values(uniqueMap)
+      .sort(
+        (a: any, b: any) =>
+          new Date(b.created_at).getTime() -
+          new Date(a.created_at).getTime()
+      )
+      .slice(0, 5);
+
+
+
+  const dayNumber = Math.floor(
+    Date.now() / 86400000
+  );
+
+  const startIndex =
+    latestProducts.length <= 3
+      ? 0
+      : dayNumber %
+      (latestProducts.length - 2);
+
+  const topThree =
+    latestProducts.slice(
+      startIndex,
+      startIndex + 3
+    );
 
   const goCollection = (name: string) => {
     navigate(

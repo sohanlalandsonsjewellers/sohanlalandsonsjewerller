@@ -5,19 +5,20 @@ import CategoryStrip from "../components/Users/Categories/CategoryStrip";
 import FeaturedCollections from "../components/Users/Collections/FeaturedCollections";
 import UserFooter from "../components/Users/Footer/MainFooter";
 import ProductGrid from "../components/Users/Product/ProductGrid";
-import { Container, Box, CircularProgress, Typography } from "@mui/material";
+import { Container, Box, CircularProgress } from "@mui/material";
 import { getAllPublic } from "../api/product";
 import CartDrawer from "../components/Users/Cart/CartDrawer";
-// ✅ Feedback Section Import
 import FeedbackSection from "../components/Users/Feedback/FeedbackSection";
 
 export default function UserHome() {
-  // const { user } = useAuth();
   const [products, setProducts] = useState<any[]>([]);
   const [initialProducts, setInitialProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({ q: "", category: "all" });
   const [cartOpen, setCartOpen] = useState(false);
+
+  // LOGIC: Agar search query (q) khali nahi hai, to banner hide karo
+  const isSearching = filters.q.trim().length > 0;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -35,13 +36,11 @@ export default function UserHome() {
         }
       } catch (err: any) {
         if (err.name === "CanceledError" || err.message === "canceled") return;
-        console.error("Fetch failure:", err);
         setProducts([]);
       } finally {
         if (!signal.aborted) setLoading(false);
       }
     }
-
     fetchProducts();
     return () => { controller.abort(); };
   }, [filters]);
@@ -56,48 +55,31 @@ export default function UserHome() {
 
   return (
     <Box sx={{ bgcolor: "#FDFBF7", minHeight: "100vh" }}>
-      <MainNavbar onSearch={handleSearch} />
-      <CategoryStrip products={initialProducts} onSelect={handleCategory} />
-      <HomeBanner category={filters.category} />
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 2 }}>
+      <MainNavbar onSearch={handleSearch} allProducts={initialProducts} />
+
+      {!isSearching && (
+        <>
+          <CategoryStrip products={initialProducts} onSelect={handleCategory} />
+          <HomeBanner category={filters.category} />
+        </>
+      )}
+
+      <Container maxWidth="lg" sx={{ mt: isSearching ? 4 : 0, mb: 2 }}>
         {loading ? (
           <Box sx={{ textAlign: "center", py: 6 }}><CircularProgress sx={{ color: "#4A0E17" }} /></Box>
-        ) : products.length === 0 ? (
-          <Box sx={{ textAlign: "center", py: 8, border: "1px dashed #E5D5BC", bgcolor: "#F9F6F0", px: 2 }}>
-            <Typography sx={{ fontFamily: '"Playfair Display", serif', color: "#6E6557", fontStyle: "italic", fontSize: "1.1rem" }}>
-              No exquisite pieces found matching this collection selection.
-            </Typography>
-          </Box>
         ) : (
           <ProductGrid products={products} />
         )}
       </Container>
 
+      {!isSearching && (
+        <Box sx={{ background: "linear-gradient(to bottom,#faf8f5,#f5f0e8)", pt: 2, pb: 2, borderTop: "1px solid rgba(184,155,115,.15)" }}>
+          <FeaturedCollections products={initialProducts} />
+        </Box>
+      )}
 
-      {/* LUXURY SEPARATOR */}
-
-      <Box
-        sx={{
-          background:
-            "linear-gradient(to bottom,#faf8f5,#f5f0e8)",
-
-          pt: 2,
-          pb: 2,
-
-          borderTop:
-            "1px solid rgba(184,155,115,.15)"
-        }}
-      >
-
-        <FeaturedCollections
-          products={products}
-        />
-
-      </Box>
-
-      {/* ✅ FEEDBACK SECTION PLACED HERE */}
-      <FeedbackSection />
-
+      {!isSearching && <FeedbackSection />}
+      
       <UserFooter />
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </Box>

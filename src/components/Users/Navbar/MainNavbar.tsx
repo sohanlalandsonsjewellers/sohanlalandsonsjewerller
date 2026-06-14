@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { AppBar, Toolbar, Typography, Box, InputBase, IconButton, Badge, Menu, MenuItem, ListItemIcon } from '@mui/material';
-import { ShoppingBagOutlined, FavoriteBorderOutlined, PersonOutlineOutlined, SearchOutlined, LogoutOutlined, Notifications } from '@mui/icons-material';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState, useMemo } from 'react';
+import { AppBar, Toolbar, Typography, Box, InputBase, IconButton, Badge, Menu, MenuItem, Paper, List, ListItem, ListItemText, Divider, ListItemIcon } from '@mui/material';
+import { ShoppingBagOutlined, FavoriteBorderOutlined, PersonOutlineOutlined, SearchOutlined, LogoutOutlined, LocalShippingOutlined, NotificationsOutlined, AccountCircleOutlined } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthProvider';
 import { useCart } from '../../../contexts/CartProvider';
 import CartDrawer from '../Cart/CartDrawer';
@@ -9,189 +9,110 @@ import TrustBar from './TrustBar';
 
 interface MainNavbarProps {
   onSearch: (query: string) => void;
+  allProducts?: any[];
 }
 
-export default function MainNavbar({ onSearch }: MainNavbarProps) {
+export default function MainNavbar({ onSearch, allProducts = [] }: MainNavbarProps) {
   const { logout, user } = useAuth();
   const { itemCount } = useCart();
   const navigate = useNavigate();
-  const location = useLocation();
-
   const [searchVal, setSearchVal] = useState("");
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const isMenuOpen = Boolean(anchorEl);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  // 🚀 LIVE WISHLIST BADGE STATE
-  const [wishlistCount, setWishlistCount] = useState(() => {
-    // ANTI-BLINK INITIALIZER: Page load hote hi instant storage read bina delay ke
-    try {
-      const saved = localStorage.getItem("sls_wishlist");
-      const ids = saved ? JSON.parse(saved) : [];
-      return Array.isArray(ids) ? ids.length : 0;
-    } catch {
-      return 0;
-    }
-  });
+  // 1. Dynamic Product Name Search Logic (categories excluded intentionally)
+  const searchResults = useMemo(() => {
+    if (!searchVal) return { categories: [], products: [] };
 
-  // 🚀 SMOOTH UPDATE ENGINE: Instantly reacts to custom updates without destroying state trees
-  useEffect(() => {
-    const updateCount = () => {
-      try {
-        const savedWishlistRaw = localStorage.getItem("sls_wishlist");
-        const wishlistIds = savedWishlistRaw ? JSON.parse(savedWishlistRaw) : [];
-        const newCount = Array.isArray(wishlistIds) ? wishlistIds.length : 0;
+    const filteredProds = allProducts
+      .filter(p => p.name.toLowerCase().includes(searchVal.toLowerCase()))
+      .filter((v, i, a) => a.findIndex(t => t.name === v.name) === i)
+      .slice(0, 5);
 
-        // Prevent setting same state to stop re-render loops & blinking
-        setWishlistCount((prev) => (prev === newCount ? prev : newCount));
-      } catch {
-        setWishlistCount(0);
-      }
-    };
+    return { categories: [], products: filteredProds };
+  }, [searchVal, allProducts]);
 
-    window.addEventListener("sls_wishlist_update", updateCount);
-    window.addEventListener("storage", updateCount);
-
-    return () => {
-      window.removeEventListener("sls_wishlist_update", updateCount);
-      window.removeEventListener("storage", updateCount);
-    };
-  }, []); // 🚀 REMOVED location triggers to prevent navbar numbers from flashing on routing
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchVal(value);
-    onSearch(value);
-  };
-
-  const handleLogoClick = () => {
-    if (location.pathname === "/" || location.pathname === "/user") {
-      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  const handleNavigation = (path: string) => {
+    setSearchVal("");
+    setAnchorEl(null);
+    if (window.location.pathname === path) {
+      // Already on this exact collection page - force a refresh of route state
+      navigate('/', { replace: true });
+      window.requestAnimationFrame(() => navigate(path));
     } else {
-      navigate('/');
+      navigate(path);
     }
   };
-
-  // Memoize counts to make DOM node injection sub-millisecond fast
-  const memoizedWishlistCount = useMemo(() => wishlistCount, [wishlistCount]);
-  const memoizedItemCount = useMemo(() => itemCount, [itemCount]);
 
   return (
     <>
-      <AppBar
-        position="sticky"
-        elevation={0}
-        sx={{ borderBottom: '1px solid rgba(229, 213, 188, 0.15)', bgcolor: '#0A0A0A', zIndex: 1100 }}
-      >
+      <AppBar position="sticky" elevation={0} sx={{ borderBottom: '1px solid rgba(74,14,23,.2)', background: '#FDFBF7', zIndex: 1200 }}>
         <TrustBar />
+        <Toolbar sx={{ 
+          display: 'grid', 
+          gridTemplateColumns: { xs: '1fr auto', md: '1fr 2fr 1fr' }, 
+          alignItems: 'center', 
+          gap: { xs: 1, md: 2 },
+          px: { xs: 1.5, md: 6 }, 
+          py: 1 
+        }}>
 
-        <Toolbar sx={{ flexDirection: 'column', alignItems: 'stretch', px: { xs: 2, md: 6 }, py: { xs: 1.9, md: 1.5 } }}>
-
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', mb: { xs: 1.5, md: 0 } }}>
-            {/* Logo box */}
-            <Box onClick={handleLogoClick} sx={{ display: 'flex', flexDirection: 'column', cursor: 'pointer', userSelect: 'none', '&:hover': { opacity: 0.85 } }}>
-              <Typography variant="h5" sx={{ fontFamily: '"Playfair Display", serif', fontWeight: 700, color: '#E5D5BC', letterSpacing: '0.05em', fontSize: { xs: '1.2rem', sm: '1.4rem', md: '1.6rem' }, whiteSpace: 'nowrap', lineHeight: 1 }}>
-                सोहन लाल एंड संस ज्वेलर्स
-              </Typography>
-              <Typography variant="caption" sx={{ letterSpacing: '0.32em', fontSize: '0.52rem', color: '#FFFFFF', display: 'block', mt: 0.5 }}>
-                LUXE JEWELLERY SHOWROOM
-              </Typography>
-            </Box>
-
-            {/* Actions area */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, md: 1.5 } }}>
-
-              {/* 🚀 FIXED ZERO-BLINK WISHLIST ICON & COUNTER */}
-              <IconButton onClick={() => navigate("/wishlist")} sx={{ color: '#FFFFFF', p: { xs: 0.5, sm: 1 }, '&:hover': { color: '#E5D5BC' } }}>
-                <Badge
-                  badgeContent={memoizedWishlistCount}
-                  showZero={false} // Smoothly hides instead of flashing a 0 text node layout change
-                  sx={{
-                    '& .MuiBadge-badge': {
-                      bgcolor: '#E5D5BC',
-                      color: '#0A0A0A',
-                      fontWeight: 700,
-                      transition: 'none' // Disables native slow CSS transitions that cause layout text jumps
-                    }
-                  }}
-                >
-                  <FavoriteBorderOutlined />
-                </Badge>
-              </IconButton>
-
-              {/* Bag Shopping Icon */}
-              <IconButton onClick={() => setIsCartOpen(true)} sx={{ color: '#FFFFFF', p: { xs: 0.5, sm: 1 }, '&:hover': { color: '#E5D5BC' } }}>
-                <Badge
-                  badgeContent={memoizedItemCount}
-                  showZero={false}
-                  sx={{ '& .MuiBadge-badge': { bgcolor: '#E5D5BC', color: '#0A0A0A', fontWeight: 700, transition: 'none' } }}
-                >
-                  <ShoppingBagOutlined />
-                </Badge>
-              </IconButton>
-
-              <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} sx={{ color: '#FFFFFF', p: { xs: 0.5, sm: 1 }, ml: 0.5, '&:hover': { color: '#E5D5BC' } }}>
-                <PersonOutlineOutlined />
-              </IconButton>
-            </Box>
+          {/* Logo */}
+          <Box onClick={() => navigate('/')} sx={{ cursor: 'pointer', justifySelf: 'start' }}>
+            <Typography variant="h6" sx={{ fontFamily: '"Playfair Display", serif', fontWeight: 800, color: '#4A0E17', fontSize: { xs: '0.9rem', md: '1.35rem' }, lineHeight: 1 }}>सोहन लाल एंड संस ज्वेलर्स</Typography>
+            <Typography variant="caption" sx={{ fontSize: '0.45rem', color: '#4A0E17', display: 'block' }}>LUXE JEWELLERY SHOWROOM</Typography>
           </Box>
 
-          {/* Search container */}
-          <Box sx={{ display: 'flex', alignItems: 'center', bgcolor: '#141414', px: 2, py: 0.4, width: { xs: '100%', md: '32%' }, mx: 'auto', border: '1px solid rgba(229, 213, 188, 0.3)', '&:focus-within': { borderColor: '#E5D5BC' }, position: { md: 'absolute' }, left: { md: '50%' }, transform: { md: 'translateX(-50%)' }, zIndex: 5 }}>
-            <InputBase placeholder="Search collections..." value={searchVal} onChange={handleChange} sx={{ ml: 1, flex: 1, fontSize: '0.85rem', color: '#FFFFFF' }} />
-            <SearchOutlined sx={{ color: '#E5D5BC', fontSize: '1.2rem' }} />
+          {/* Search Box */}
+          <Box sx={{ gridColumn: { xs: 'span 2', md: 'auto' }, order: { xs: 3, md: 2 }, position: 'relative' }}>
+            <Box sx={{ display: "flex", alignItems: "center", background: '#FFFFFF', border: '1px solid #4A0E17', borderRadius: "8px", height: "38px" }}>
+              <InputBase fullWidth placeholder="Search..." value={searchVal} onChange={(e) => { setSearchVal(e.target.value); onSearch(e.target.value); }} sx={{ px: 2, color: '#4A0E17', fontSize: '0.9rem' }} />
+              <SearchOutlined sx={{ color: "#4A0E17", mr: 1 }} />
+            </Box>
+
+            {searchVal && (searchResults.categories.length > 0 || searchResults.products.length > 0) && (
+              <Paper sx={{ position: 'absolute', top: '42px', width: '100%', zIndex: 2000, boxShadow: '0 8px 16px rgba(0,0,0,0.1)', bgcolor: '#FDFBF7' }}>
+                <List sx={{ py: 0 }}>
+                  {searchResults.categories.map(cat => (
+                    <ListItem key={cat} onClick={() => handleNavigation(`/collection/${cat}`)} sx={{ borderBottom: '1px solid #eee', '&:hover': { bgcolor: '#f7f1e9' } }}>
+                      <ListItemText primary={cat} primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 600, color: '#4A0E17' }} />
+                    </ListItem>
+                  ))}
+                  {searchResults.categories.length > 0 && searchResults.products.length > 0 && <Divider />}
+                  {searchResults.products.map(p => (
+                    <ListItem key={p.id} onClick={() => handleNavigation(`/collection/${p.name}`)} sx={{ '&:hover': { bgcolor: '#f5f5f5' } }}>
+                      <ListItemText primary={p.name} primaryTypographyProps={{ fontSize: '0.85rem' }} />
+                    </ListItem>
+                  ))}
+                </List>
+              </Paper>
+            )}
+          </Box>
+
+          {/* Icons & Profile Menu */}
+          <Box sx={{ display: 'flex', justifySelf: 'end', order: 2 }}>
+            <IconButton onClick={() => navigate("/wishlist")} sx={{ color: '#4A0E17' }}><FavoriteBorderOutlined /></IconButton>
+            <IconButton onClick={() => setIsCartOpen(true)} sx={{ color: '#4A0E17' }}><Badge badgeContent={itemCount} sx={{ '& .MuiBadge-badge': { bgcolor: '#4A0E17', color: '#fff' } }}><ShoppingBagOutlined /></Badge></IconButton>
+            <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} sx={{ color: '#4A0E17' }}><PersonOutlineOutlined /></IconButton>
           </Box>
         </Toolbar>
 
-        <Menu
-          anchorEl={anchorEl}
-          open={isMenuOpen}
-          onClose={() => setAnchorEl(null)}
-          PaperProps={{
-            sx: {
-              minWidth: 200,
-              mt: 1.5,
-              '& .MuiMenuItem-root': { py: 1.5, fontSize: '0.9rem' }
-            }
-          }}
-        >
+        {/* Profile Menu */}
+        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)} sx={{ mt: 1 }}>
           {user ? (
-            <>
-              {/* Profile Header */}
-              <Box sx={{ px: 2, py: 1, borderBottom: '1px solid #eee', mb: 1 }}>
-                <Typography sx={{ fontWeight: 600 }}>{user.name}</Typography>
-                <Typography variant="caption" color="text.secondary">{user.email}</Typography>
-              </Box>
-
-              <MenuItem onClick={() => { setAnchorEl(null); navigate("/profile"); }}>
-                <ListItemIcon><PersonOutlineOutlined fontSize="small" /></ListItemIcon>
-                My Profile
-              </MenuItem>
-
-              <MenuItem onClick={() => { setAnchorEl(null); navigate("/my-orders"); }}>
-                <ListItemIcon><ShoppingBagOutlined fontSize="small" /></ListItemIcon>
-                Orders
-              </MenuItem>
-
-              <MenuItem onClick={() => { setAnchorEl(null); navigate("/notifications"); }}>
-                <ListItemIcon><Notifications fontSize="small" /></ListItemIcon>
-                Notifications
-              </MenuItem>
-
-              <MenuItem onClick={() => { setAnchorEl(null); logout("/"); }}>
-                <ListItemIcon><LogoutOutlined fontSize="small" /></ListItemIcon>
-                Logout
-              </MenuItem>
-            </>
+            <Box>
+              <MenuItem sx={{ fontWeight: 600, pointerEvents: 'none' }}>{user.name || "User"}</MenuItem>
+              <Divider />
+              <MenuItem onClick={() => handleNavigation("/profile")}><ListItemIcon><AccountCircleOutlined fontSize="small" /></ListItemIcon>My Profile</MenuItem>
+              <MenuItem onClick={() => handleNavigation("/my-orders")}><ListItemIcon><LocalShippingOutlined fontSize="small" /></ListItemIcon>Orders</MenuItem>
+              <MenuItem onClick={() => handleNavigation("/notifications")}><ListItemIcon><NotificationsOutlined fontSize="small" /></ListItemIcon>Notifications</MenuItem>
+              <MenuItem onClick={() => { setAnchorEl(null); logout("/"); }}><ListItemIcon><LogoutOutlined fontSize="small" /></ListItemIcon>Logout</MenuItem>
+            </Box>
           ) : (
-            <MenuItem onClick={() => { setAnchorEl(null); navigate("/login"); }}>
-              <ListItemIcon><PersonOutlineOutlined fontSize="small" /></ListItemIcon>
-              Login
-            </MenuItem>
+            <MenuItem onClick={() => handleNavigation("/login")}>Login / Sign Up</MenuItem>
           )}
         </Menu>
       </AppBar>
-
       <CartDrawer open={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </>
   );

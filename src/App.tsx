@@ -39,11 +39,17 @@ import MyOrders from "./routes/MyOrders";
 import MyProfile from "./routes/MyProfile";
 import Notifications from "./routes/Notifications";
 
+// Policy Pages
+import PrivacyPolicy from "./components/Users/Footer/pages/PrivacyPolicy";
+import TermsAndConditions from "./components/Users/Footer/pages/TermsAndConditions";
+import ShippingPolicy from "./components/Users/Footer/pages/ShippingPolicy";
+import ExchangePolicy from "./components/Users/Footer/pages/ExchangePolicy";
+import FAQs from "./components/Users/Footer/pages/FAQs";
+
 export default function App() {
   const { token, user } = useAuth();
   const [loading, setLoading] = useState(true);
 
-  // Auth load hone tak wait karo taaki redirect loop na bane
   useEffect(() => {
     setLoading(false);
   }, [token]);
@@ -61,10 +67,10 @@ export default function App() {
         <Route path="/login" element={token ? <Navigate to="/" replace /> : <LoginPage />} />
         <Route path="/register" element={token ? <Navigate to="/" replace /> : <RegisterPage />} />
 
-        {/* ROOT REDIRECTOR: Logic set for Admin vs User */}
+        {/* ROOT REDIRECTOR */}
         <Route path="/" element={
           !token ? (
-            <UserHome /> // Logout hone par sabko UserHome dikhe
+            <UserHome />
           ) : (
             user?.adminRole ? <Navigate to="/admin/users" replace /> : <UserHome />
           )
@@ -76,7 +82,7 @@ export default function App() {
         <Route path="/collection/:name" element={<CollectionLanding />} />
         <Route path="/product/:id" element={<ProductDetails />} />
 
-        {/* ADMIN ROUTES - Protected with Role check */}
+        {/* ADMIN ROUTES */}
         <Route path="/admin/users" element={user?.adminRole ? <UserList /> : <Navigate to="/" replace />} />
         <Route path="/admin/users/create" element={user?.adminRole ? <UserCreate /> : <Navigate to="/" replace />} />
         <Route path="/admin/users/edit/:id" element={user?.adminRole ? <UserEdit /> : <Navigate to="/" replace />} />
@@ -98,6 +104,13 @@ export default function App() {
         <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
 
         <Route path="/admin/feedbacks" element={user?.adminRole ? <FeedbackList /> : <Navigate to="/" replace />} />
+
+        {/* POLICY ROUTES — Public */}
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+        <Route path="/shipping-policy" element={<ShippingPolicy />} />
+        <Route path="/exchange-policy" element={<ExchangePolicy />} />
+        <Route path="/faqs" element={<FAQs />} />
 
         {/* FALLBACK */}
         <Route path="*" element={<Navigate to="/" replace />} />
