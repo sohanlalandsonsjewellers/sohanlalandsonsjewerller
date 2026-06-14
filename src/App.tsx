@@ -43,7 +43,6 @@ import Notifications from "./routes/Notifications";
 import PrivacyPolicy from "./components/Users/Footer/pages/PrivacyPolicy";
 import TermsAndConditions from "./components/Users/Footer/pages/TermsAndConditions";
 import ShippingPolicy from "./components/Users/Footer/pages/ShippingPolicy";
-import RefundPolicy from "./components/Users/Footer/pages/RefundPolicy";
 import ExchangePolicy from "./components/Users/Footer/pages/ExchangePolicy";
 import FAQs from "./components/Users/Footer/pages/FAQs";
 
@@ -110,7 +109,6 @@ export default function App() {
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
         <Route path="/shipping-policy" element={<ShippingPolicy />} />
-        <Route path="/refund-policy" element={<RefundPolicy />} />
         <Route path="/exchange-policy" element={<ExchangePolicy />} />
         <Route path="/faqs" element={<FAQs />} />
 

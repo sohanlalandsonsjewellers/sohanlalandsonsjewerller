@@ -78,7 +78,7 @@ export default function MainFooter() {
         <Grid container spacing={3}>
 
           {/* QR */}
-           <Grid size={{ xs: 12, sm: 3 }}>
+          <Grid size={{ xs: 12, sm: 3 }}>
             <ColHead>Download App</ColHead>
             <Box sx={{ display: "inline-block", p: 1, background: "#fff", borderRadius: "8px", border: "2px solid #D4AF37" }}>
               <QRCode value="http://localhost:3000/" size={110} />
@@ -88,18 +88,45 @@ export default function MainFooter() {
             </Typography>
 
             <Stack direction="row" spacing={0.8} sx={{ mt: 1.5 }}>
-              {[<WhatsApp key="w" />, <Instagram key="i" />, <Facebook key="f" />, <YouTube key="y" />].map((icon, i) => (
-                <IconButton
+              {[
+                {
+                  icon: <WhatsApp />,
+                  link: "https://wa.me/916306748500"
+                },
+                {
+                  icon: <Instagram />,
+                  link: "https://www.instagram.com/sohanlalandsonsjeweller/"
+                },
+                {
+                  icon: <Facebook />,
+                  link: "#"
+                },
+                {
+                  icon: <YouTube />,
+                  link: "#"
+                }
+              ].map((item, i) => (
+                <Box
                   key={i}
-                  size="small"
+                  component="a"
+                  href={item.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   sx={{
-                    color: "rgba(255,255,255,0.6)",
-                    p: 0.5,
-                    "&:hover": { color: "#E6C46A" }
+                    color: "#E6C46A",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    transition: "0.3s",
+                    "&:hover": {
+                      transform: "translateY(-2px)",
+                      color: "#F4D38B"
+                    }
                   }}
                 >
-                  {React.cloneElement(icon, { sx: { fontSize: 18 } })}
-                </IconButton>
+                  {item.icon}
+                </Box>
               ))}
             </Stack>
           </Grid>
@@ -121,7 +148,6 @@ export default function MainFooter() {
             <FooterLink to="/privacy-policy">Privacy Policy</FooterLink>
             <FooterLink to="/terms-and-conditions">Terms & Conditions</FooterLink>
             <FooterLink to="/shipping-policy">Shipping Policy</FooterLink>
-            <FooterLink to="/refund-policy">Refund Policy</FooterLink>
             <FooterLink to="/exchange-policy">Exchange Policy</FooterLink>
             <FooterLink to="/faqs">FAQs</FooterLink>
           </Grid>

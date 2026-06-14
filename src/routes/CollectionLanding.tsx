@@ -13,6 +13,7 @@ export default function CollectionLanding() {
 
   const [loading, setLoading] = useState(true);
   const [filteredVariants, setFilteredVariants] = useState<any[]>([]);
+  const [allProducts, setAllProducts] = useState<any[]>([]);
 
   const [wishlist, setWishlist] = useState<string[]>(() => {
     try {
@@ -41,10 +42,11 @@ export default function CollectionLanding() {
       setLoading(true);
       try {
         const res = await getAllPublic({ q: "", category: "all" });
-        const allProducts = res.products || [];
+        const allFetchedProducts = res.products || [];
+        setAllProducts(allFetchedProducts);
         const decodedTargetName = decodeURIComponent(name || "").toLowerCase().trim();
 
-        const matchedItems = allProducts.filter((p: any) => {
+        const matchedItems = allFetchedProducts.filter((p: any) => {
           const productName = p.name ? p.name.toLowerCase().trim() : "";
           return productName.includes(decodedTargetName) || decodedTargetName.includes(productName);
         });
@@ -67,7 +69,7 @@ export default function CollectionLanding() {
 
   return (
     <Box sx={{ bgcolor: '#FDFBF7', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <MainNavbar onSearch={() => {}} />
+      <MainNavbar onSearch={() => {}} allProducts={allProducts} />
       <Container maxWidth="xl" sx={{ py: { xs: 1.5, md: 3 }, flex: 1 }}>
         <Button startIcon={<ArrowBackIos sx={{ fontSize: '0.62rem !important' }} />} onClick={() => navigate('/')} sx={{ color: '#6E6557', mb: 1, fontSize: '0.7rem' }}>BACK TO HOME</Button>
         
