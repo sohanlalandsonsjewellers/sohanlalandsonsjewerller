@@ -17,7 +17,7 @@ export default function UserHome() {
   const [filters, setFilters] = useState({ q: "", category: "all" });
   const [cartOpen, setCartOpen] = useState(false);
 
-  // LOGIC: Agar search query (q) khali nahi hai, to banner hide karo
+  // LOGIC: Agar search query (q) khali nahi hai, to banner hide karo 
   const isSearching = filters.q.trim().length > 0;
 
   useEffect(() => {
