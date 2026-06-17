@@ -12,6 +12,7 @@ interface ProductTableProps {
 export default function ProductTable({ products, onEdit, onDelete }: ProductTableProps) {
   const columns = [
     { field: "sku", headerName: "SKU-ID", flex: 1, headerClassName: 'super-app-theme--header' },
+    { field: "createdAt", headerName: "createdAt", flex: 1, headerClassName: 'super-app-theme--header', type: 'dateTime' as const, valueGetter: (v: any) => v ? new Date(v) : null },
     { field: "name", headerName: "Name", flex: 1, headerClassName: 'super-app-theme--header' },
     { field: "category", headerName: "Category", flex: 1, headerClassName: 'super-app-theme--header' },
     { field: "subCategory", headerName: "Sub Category", flex: 1, headerClassName: 'super-app-theme--header' },
@@ -92,7 +93,7 @@ export default function ProductTable({ products, onEdit, onDelete }: ProductTabl
     <Box 
       sx={{ 
         width: '100%', 
-        bgcolor: '#FFFDF9 !important', // 🚀 Forces solid light canvas background framing parameters
+        bgcolor: '#FFFDF9 !important',
         border: '1px solid rgba(229, 213, 188, 0.35)',
         boxShadow: '0px 8px 24px rgba(0,0,0,0.04)'
       }}
@@ -102,51 +103,59 @@ export default function ProductTable({ products, onEdit, onDelete }: ProductTabl
         columns={columns}
         autoHeight
         pagination
+        initialState={{
+          pagination: { paginationModel: { pageSize: 10, page: 0 } },
+          sorting: { sortModel: [{ field: 'createdAt', sort: 'desc' }] },
+          columns: { columnVisibilityModel: { createdAt: false } }
+        }}
         pageSizeOptions={[10]}
         getRowId={(row) => row.id || row._id}
         sx={{
           border: 'none',
           borderRadius: 0,
           
-          // 🔥 1. FORCING LIGHT ROW CANVAS BACKGROUND (Bypasses dark modes overrides permanently)
           "& .MuiDataGrid-main": {
             backgroundColor: "#FFFDF9 !important",
           },
           "& .MuiDataGrid-row": {
-            backgroundColor: "#FFFDF9 !important", // No more black rows merging text views
+            backgroundColor: "#FFFDF9 !important",
           },
           
-          // 🔥 2. FORCING RICH DARK BURGUNDY TEXT VISIBILITY FOR BODY CELL NODES
           "& .MuiDataGrid-cell": {
-            color: '#4A0E17 !important', // 🚀 Fixed: Text turns deep dark burgundy and looks razor-sharp
+            color: '#4A0E17 !important',
             fontSize: '0.85rem !important',
             fontWeight: '600 !important',
             borderBottom: '1px solid rgba(229, 213, 188, 0.2) !important',
           },
           
-          // Header Specifications Row Alignment Color Fixing
           "& .super-app-theme--header": {
-            backgroundColor: "#F5EFE6 !important", // Smooth royal cream bar color
+            backgroundColor: "#F5EFE6 !important",
             borderBottom: '1px solid rgba(229, 213, 188, 0.4) !important',
           },
           "& .MuiDataGrid-columnHeaderTitle": {
             fontFamily: '"Playfair Display", serif',
             fontWeight: '700 !important',
             fontSize: '0.9rem !important',
-            color: "#4A0E17 !important", // Header links visibility matching titles guidelines
+            color: "#4A0E17 !important",
           },
           
           "& .MuiDataGrid-row:hover": {
             bgcolor: 'rgba(229, 213, 188, 0.15) !important'
           },
           
-          // Bottom Controls Layer Pagination Panel Blocks Overrides
+          // Pagination styling — maroon theme
           "& .MuiDataGrid-footerContainer": {
             borderTop: '1px solid rgba(229, 213, 188, 0.3) !important',
             bgcolor: '#F5EFE6 !important',
             "& .MuiTablePagination-root, & .MuiTypography-root, & .MuiIconButton-root": {
               color: '#4A0E17 !important'
+            },
+            "& .MuiIconButton-root.Mui-disabled": {
+              color: 'rgba(74,14,23,0.3) !important'
             }
+          },
+          "& .MuiDataGrid-selectedRowCount": {
+            display: 'none' // unnecessary row count text hide
           }
         }}
       />

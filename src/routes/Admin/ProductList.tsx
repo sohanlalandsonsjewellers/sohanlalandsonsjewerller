@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Button, Box, TextField, InputAdornment } from "@mui/material";
+import { Button, Box, TextField, InputAdornment, IconButton } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import ClearIcon from "@mui/icons-material/Clear";
 import { useNavigate } from "react-router-dom";
 import { getAllProducts } from "../../api/product";
 import AdminLayout from "../../components/Admin/AdminLayout";
@@ -23,19 +24,19 @@ export default function ProductList() {
     setProducts(res.products || []);
   }
 
-  // Frontend quick string match search execution track logic
+  // Search filter — Name aur SKU-ID dono se
   const filtered = products.filter((p: any) => {
     const query = search.toLowerCase().trim();
     if (!query) return true;
-    return p.name && p.name.toLowerCase().includes(query);
+    return (
+      (p.name && p.name.toLowerCase().includes(query)) ||
+      (p.sku && p.sku.toLowerCase().includes(query))
+    );
   });
 
   return (
     <AdminLayout title="Products">
       
-      {/* =========================================================
-          🚀 UNIFIED ACTION CONTROL BAR BLOCK (FIXED SPACING & BORDERS)
-          ========================================================= */}
       <Box 
         sx={{ 
           display: "flex", 
@@ -46,14 +47,20 @@ export default function ProductList() {
           gap: 2 
         }}
       >
-        {/* OUTLINED VISIBLE TEXTFIELD CONTROLLER */}
+        {/* SEARCH */}
         <TextField
           size="small"
-          placeholder="Search Product By Name strictly..."
+          placeholder="Search by Name or SKU-ID..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           InputProps={{
-            endAdornment: (
+            endAdornment: search ? (
+              <InputAdornment position="end">
+                <IconButton size="small" onClick={() => setSearch("")}>
+                  <ClearIcon sx={{ fontSize: 18, color: '#9E9E9E' }} />
+                </IconButton>
+              </InputAdornment>
+            ) : (
               <InputAdornment position="end">
                 <SearchIcon sx={{ color: "#4A0E17", fontSize: "1.2rem" }} />
               </InputAdornment>
@@ -63,23 +70,19 @@ export default function ProductList() {
             width: { xs: "100%", sm: "340px" }, 
             bgcolor: "#FFFFFF",
             borderRadius: 0,
-            
-            // Text values visibility configuration controls
             "& .MuiInputBase-input": {
-              color: "#4A0E17 !important", // Typed text stays crisp dark red-maroon
+              color: "#4A0E17 !important",
               fontSize: "0.85rem",
               fontWeight: 600,
             },
             "& .MuiInputBase-input::placeholder": {
-              color: "#757575 !important", // Fix placeholder text tracking view visibility
+              color: "#757575 !important",
               opacity: 1,
             },
-            
-            // Fixed Outer Grid Border Visibility configuration states before click trigger
             "& .MuiOutlinedInput-root": { 
               borderRadius: 0,
               "& fieldset": { 
-                borderColor: "#A0A0A0 !important", // Sharp clear grey border layout matching your mockup
+                borderColor: "#A0A0A0 !important",
                 borderWidth: "1px !important"
               },
               "&:hover fieldset": { 
@@ -93,7 +96,7 @@ export default function ProductList() {
           }}
         />
 
-        {/* CONTROLLERS HOOK BUTTON ACTION */}
+        {/* ADD PRODUCT BUTTON */}
         <Button 
           variant="contained" 
           onClick={() => navigate("/admin/products/create")} 
@@ -114,7 +117,14 @@ export default function ProductList() {
         </Button>
       </Box>
 
-      {/* CORE DATA DATAGRID TABLE ELEMENT VIEW MODULE */}
+      {/* Result count jab search ho */}
+      {search && (
+        <Box sx={{ fontSize: '0.78rem', color: '#9E9E9E', mb: 1.5 }}>
+          {filtered.length} result{filtered.length !== 1 ? 's' : ''} found for "{search}"
+        </Box>
+      )}
+
+      {/* ProductTable — pagination internally handle karega (10 per page) */}
       <ProductTable
         products={filtered}
         onEdit={(id: string) => navigate(`/admin/products/edit/${id}`)}

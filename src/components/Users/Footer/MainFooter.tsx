@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Box, Container, Grid, IconButton, Typography, Stack } from "@mui/material";
+import { Box, Container, Grid, Typography, Stack } from "@mui/material";
 import { WhatsApp, Instagram, Facebook, YouTube, LocationOn, Phone, Email } from "@mui/icons-material";
 import QRCode from "react-qr-code";
 import logo from "./logo.png";
@@ -81,7 +81,7 @@ export default function MainFooter() {
           <Grid size={{ xs: 12, sm: 3 }}>
             <ColHead>Download App</ColHead>
             <Box sx={{ display: "inline-block", p: 1, background: "#fff", borderRadius: "8px", border: "2px solid #D4AF37" }}>
-              <QRCode value="http://localhost:3000/" size={110} />
+              <QRCode value="https://sohanlalandsonsjewerller-fe.onrender.com/" size={110} />
             </Box>
             <Typography sx={{ mt: 1, color: "rgba(255,255,255,0.45)", fontSize: 11.5, lineHeight: 1.5 }}>
               Scan to visit our website
@@ -135,7 +135,6 @@ export default function MainFooter() {
           <Grid size={{ xs: 12, sm: 3 }}>
             <ColHead>Useful Links</ColHead>
             <FooterLink to="/">Home</FooterLink>
-            <FooterLink to="/new-arrivals">New Arrivals</FooterLink>
             <FooterLink to="/wishlist">Wishlist</FooterLink>
             <FooterLink to="/my-orders">My Orders</FooterLink>
             <FooterLink to="/track-order">Track Order</FooterLink>
@@ -165,7 +164,7 @@ export default function MainFooter() {
 
             <Box sx={{ display: "flex", gap: 1, mb: 0.8, alignItems: "center" }}>
               <Phone sx={{ color: "#D4AF37", fontSize: 14, flexShrink: 0 }} />
-              <Typography sx={{ color: "rgba(255,255,255,0.65)", fontSize: 12.5 }}>+91 96822 96756</Typography>
+              <Typography sx={{ color: "rgba(255,255,255,0.65)", fontSize: 12.5 }}>+91 6306748500</Typography>
             </Box>
 
             <Box sx={{ display: "flex", gap: 1, mb: 1.5, alignItems: "center" }}>
