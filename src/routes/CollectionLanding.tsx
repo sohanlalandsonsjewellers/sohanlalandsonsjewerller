@@ -104,6 +104,18 @@ export default function CollectionLanding() {
                   </Box>
 
                   <CardContent sx={{ textAlign: 'center' }}>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        display: "block",
+                        color: "#4A0E17",
+                        fontWeight: 700,
+                        textTransform: "uppercase",
+                        letterSpacing: 1
+                      }}
+                    >
+                      {item.category}
+                    </Typography>
                     <Typography variant="body2" sx={{ fontSize: '0.62rem', fontWeight: 700, color: '#8E8370' }}>{item.subCategory?.toUpperCase()}</Typography>
                     <Typography variant="body2" sx={{ fontFamily: '"Playfair Display"', fontWeight: 600 }}>{item.name}</Typography>
                     <Typography variant="body2" sx={{ color: '#4A0E17', fontWeight: 700 }}>₹{Number(item.price).toLocaleString('en-IN')}</Typography>
