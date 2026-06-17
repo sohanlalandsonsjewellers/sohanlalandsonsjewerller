@@ -20,6 +20,8 @@ type BillItem = {
   name: string;
   price: number;
   qty: number;
+  category: string;
+  hsnCode: string;
 };
 
 type BillForm = {
@@ -58,6 +60,8 @@ export default function BillCreate() {
     name: "",
     price: 0,
     qty: 1,
+    category: "",
+    hsnCode: ""
   });
 
   const [discountPercent, setDiscountPercent] = useState(0);
@@ -102,7 +106,7 @@ export default function BillCreate() {
       gstPercent: gstEnabled ? 3 : 0,
     });
 
-    setItem({ name: "", price: 0, qty: 1 });
+    setItem({ name: "", price: 0, qty: 1, category: "", hsnCode: "" });
   }
 
   // ------------------------

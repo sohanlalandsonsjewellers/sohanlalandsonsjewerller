@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { AppBar, Toolbar, Typography, Box, InputBase, IconButton, Badge, Menu, MenuItem, Paper, List, ListItem, ListItemText, Divider, ListItemIcon } from '@mui/material';
 import { ShoppingBagOutlined, FavoriteBorderOutlined, PersonOutlineOutlined, SearchOutlined, LogoutOutlined, LocalShippingOutlined, NotificationsOutlined, AccountCircleOutlined } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
@@ -15,6 +15,35 @@ interface MainNavbarProps {
 export default function MainNavbar({ onSearch, allProducts = [] }: MainNavbarProps) {
   const { logout, user } = useAuth();
   const { itemCount } = useCart();
+  const [wishlistCount, setWishlistCount] = useState(0);
+
+  useEffect(() => {
+
+    const loadWishlistCount = () => {
+      try {
+        const saved = localStorage.getItem("sls_wishlist");
+        const ids = saved ? JSON.parse(saved) : [];
+        setWishlistCount(ids.length);
+      } catch {
+        setWishlistCount(0);
+      }
+    };
+
+    loadWishlistCount();
+
+    window.addEventListener(
+      "sls_wishlist_update",
+      loadWishlistCount
+    );
+
+    return () => {
+      window.removeEventListener(
+        "sls_wishlist_update",
+        loadWishlistCount
+      );
+    };
+
+  }, []);
   const navigate = useNavigate();
   const [searchVal, setSearchVal] = useState("");
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -48,13 +77,13 @@ export default function MainNavbar({ onSearch, allProducts = [] }: MainNavbarPro
     <>
       <AppBar position="sticky" elevation={0} sx={{ borderBottom: '1px solid rgba(74,14,23,.2)', background: '#FDFBF7', zIndex: 1200 }}>
         <TrustBar />
-        <Toolbar sx={{ 
-          display: 'grid', 
-          gridTemplateColumns: { xs: '1fr auto', md: '1fr 2fr 1fr' }, 
-          alignItems: 'center', 
+        <Toolbar sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr auto', md: '1fr 2fr 1fr' },
+          alignItems: 'center',
           gap: { xs: 1, md: 2 },
-          px: { xs: 1.5, md: 6 }, 
-          py: 1 
+          px: { xs: 1.5, md: 6 },
+          py: 1
         }}>
 
           {/* Logo */}
@@ -91,7 +120,23 @@ export default function MainNavbar({ onSearch, allProducts = [] }: MainNavbarPro
 
           {/* Icons & Profile Menu */}
           <Box sx={{ display: 'flex', justifySelf: 'end', order: 2 }}>
-            <IconButton onClick={() => navigate("/wishlist")} sx={{ color: '#4A0E17' }}><FavoriteBorderOutlined /></IconButton>
+            <IconButton
+              onClick={() => navigate("/wishlist")}
+              sx={{ color: '#4A0E17' }}
+            >
+              <Badge
+                badgeContent={wishlistCount}
+                invisible={wishlistCount === 0}
+                sx={{
+                  '& .MuiBadge-badge': {
+                    bgcolor: '#4A0E17',
+                    color: '#fff'
+                  }
+                }}
+              >
+                <FavoriteBorderOutlined />
+              </Badge>
+            </IconButton>
             <IconButton onClick={() => setIsCartOpen(true)} sx={{ color: '#4A0E17' }}><Badge badgeContent={itemCount} sx={{ '& .MuiBadge-badge': { bgcolor: '#4A0E17', color: '#fff' } }}><ShoppingBagOutlined /></Badge></IconButton>
             <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} sx={{ color: '#4A0E17' }}><PersonOutlineOutlined /></IconButton>
           </Box>

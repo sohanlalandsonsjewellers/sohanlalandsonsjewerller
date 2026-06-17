@@ -1,4 +1,5 @@
 import React from 'react';
+import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -23,3 +24,5 @@ createRoot(document.getElementById('root')!).render(
     </ThemeProvider>
   </React.StrictMode>
 );
+
+serviceWorkerRegistration.register();

@@ -41,9 +41,18 @@ export const deleteBill = async (id: string) => {
 };
 
 // =============================
-// EXPORT BILL EXCEL (BASE64)
+// EXPORT BILL EXCEL (FILTER SUPPORT)
 // =============================
-export const exportBillExcel = async () => {
-  const res = await axiosInstance.get("/bill/export");
+export const exportBillExcel = async (
+  month?: string,
+  year?: string
+) => {
+  const res = await axiosInstance.get("/bill/export", {
+    params: {
+      month,
+      year,
+    },
+  });
+
   return res.data;
 };
