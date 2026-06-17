@@ -3,7 +3,7 @@ import PolicyPage from "../PolicyPage";
 const sections = [
   {
     title: "Exchange Process",
-    content: "To initiate an exchange, contact us at sohanlalandsonsjewellers@gmail.com or call +91 96822 96756 with your order ID and reason for exchange. Our team will verify and guide you through the process within 24 hours."
+    content: "To initiate an exchange, contact us at sohanlalandsonsjewellers@gmail.com or call +91 6306748500 with your order ID and reason for exchange. Our team will verify and guide you through the process within 24 hours."
   },
   {
     title: "Exchange for Different Product",

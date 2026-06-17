@@ -53,7 +53,7 @@ export default function CollectionLanding() {
 
         // ✅ Bas wahi state set karo jo use ho rahi hai
         setFilteredVariants(matchedItems);
-      } catch (err) { console.error("Error:", err); } 
+      } catch (err) { console.error("Error:", err); }
       finally { setLoading(false); }
     }
     fetchCollectionVariants();
@@ -69,10 +69,10 @@ export default function CollectionLanding() {
 
   return (
     <Box sx={{ bgcolor: '#FDFBF7', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <MainNavbar onSearch={() => {}} allProducts={allProducts} />
+      <MainNavbar onSearch={() => { }} allProducts={allProducts} />
       <Container maxWidth="xl" sx={{ py: { xs: 1.5, md: 3 }, flex: 1 }}>
         <Button startIcon={<ArrowBackIos sx={{ fontSize: '0.62rem !important' }} />} onClick={() => navigate('/')} sx={{ color: '#6E6557', mb: 1, fontSize: '0.7rem' }}>BACK TO HOME</Button>
-        
+
         <Typography variant="h5" sx={{ fontFamily: '"Playfair Display", serif', color: '#4A0E17', fontWeight: 600, textTransform: 'capitalize' }}>
           {decodeURIComponent(name || '')} Range
         </Typography>
@@ -86,21 +86,70 @@ export default function CollectionLanding() {
               const isWishlisted = wishlist.includes(itemId);
 
               return (
-                <Card 
+                <Card
                   key={itemId}
                   onClick={() => !isOutOfStock && navigate(`/product/${itemId}`)}
-                  sx={{ 
-                    borderRadius: 0, boxShadow: 'none', bgcolor: 'transparent', cursor: isOutOfStock ? 'default' : 'pointer',
-                    opacity: isOutOfStock ? 0.6 : 1, filter: isOutOfStock ? 'grayscale(100%)' : 'none',
-                    transition: '0.3s', '&:hover': { transform: isOutOfStock ? 'none' : 'translateY(-4px)' }
+                  sx={{
+                    borderRadius: 0,
+                    boxShadow: 'none',
+                    bgcolor: 'transparent',
+                    cursor: isOutOfStock ? 'default' : 'pointer',
+                    transition: '0.3s',
+                    position: 'relative',
+                    '&:hover': {
+                      transform: isOutOfStock ? 'none' : 'translateY(-4px)'
+                    }
                   }}
                 >
-                  <IconButton onClick={(e) => handleToggleWishlist(e, itemId)} sx={{ position: 'absolute', top: 12, right: 12, zIndex: 10, bgcolor: 'rgba(255,255,255,0.8)' }}>
-                    {isWishlisted ? <Favorite sx={{ color: '#4A0E17' }} /> : <FavoriteBorder />}
+                  <IconButton
+                    disabled={isOutOfStock}
+                    onClick={(e) => handleToggleWishlist(e, itemId)}
+                    sx={{
+                      position: 'absolute',
+                      top: 12,
+                      right: 12,
+                      zIndex: 100,
+                      bgcolor: 'rgba(255,255,255,0.9)',
+                      '&:hover': {
+                        bgcolor: 'rgba(255,255,255,0.9)'
+                      },
+                      cursor: isOutOfStock ? 'not-allowed' : 'pointer'
+                    }}
+                  >
+                    {isWishlisted ? (
+                      <Favorite
+                        sx={{
+                          color: '#4A0E17',
+                          fontSize: 30,
+                          opacity: 1
+                        }}
+                      />
+                    ) : (
+                      <FavoriteBorder
+                        sx={{
+                          color: '#9E9E9E',
+                          fontSize: 30,
+                          opacity: 1
+                        }}
+                      />
+                    )}
                   </IconButton>
-                  
+
                   <Box sx={{ pt: '85%', position: 'relative' }}>
-                    <CardMedia component="img" image={optimizeImage(item.images?.[0])} sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'contain' }} />
+                    <CardMedia
+                      component="img"
+                      image={optimizeImage(item.images?.[0])}
+                      sx={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain',
+                        filter: isOutOfStock ? 'grayscale(100%)' : 'none',
+                        opacity: isOutOfStock ? 0.6 : 1
+                      }}
+                    />
                   </Box>
 
                   <CardContent sx={{ textAlign: 'center' }}>

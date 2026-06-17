@@ -35,7 +35,7 @@ const sections = [
   },
   {
     title: "How do I contact customer support?",
-    content: "You can reach us at sohanlalandsonsjewellers@gmail.com or call/WhatsApp us at +91 96822 96756. Our store is open Monday to Saturday 10 AM – 8 PM and Sunday 11 AM – 6 PM."
+    content: "You can reach us at sohanlalandsonsjewellers@gmail.com or call/WhatsApp us at +91 6306748500. Our store is open Monday to Saturday 10 AM – 8 PM and Sunday 11 AM – 6 PM."
   }
 ];
 
