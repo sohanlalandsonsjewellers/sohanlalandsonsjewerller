@@ -33,7 +33,41 @@ export default function OrderList() {
 
         if (status === "ACCEPTED" && res.billLink) {
           const cleanPhone = "91" + order.customerPhone.replace(/[^0-9]/g, "").slice(-10);
-          const text = `Hello ${order.customerName}, your order #${order.id.slice(-6).toUpperCase()} is ACCEPTED!\n\nTotal: ₹${order.totalAmount}\n\nDownload Bill: ${res.billLink}`;
+
+          const text = `🎉 Hello ${order.customerName},
+
+          Your order id :  #${order.id.slice(-6).toUpperCase()} has been confirmed.
+
+          ━━━━━━━━━━━━━━
+
+          💰 Total Amount
+          ₹${order.totalAmount}
+
+          📄 Invoice
+          ${res.billLink}
+
+          🚚 Courier Partner
+          ${order.courierName || "DTDC Air"}
+
+          📦 AWB Number
+          ${order.awbNumber || "Will be shared shortly"}
+
+          📍 Track Shipment
+          ${order.trackingUrl || "Will be available shortly"}
+
+          ━━━━━━━━━━━━━━
+
+          📦 Shipment Status
+              ${order.shipmentStatus === "booked"
+              ? "Booked ✅"
+              : order.shipmentStatus || "Processing"}
+
+           ━━━━━━━━━━━━━━
+
+          Thank you for shopping with
+          💎 Sohan Lal And Son's Jewellers
+
+          📞 +91 6306748500`;    
 
           const whatsappAppUrl = `whatsapp://send?phone=${cleanPhone}&text=${encodeURIComponent(text)}`;
           window.location.href = whatsappAppUrl;

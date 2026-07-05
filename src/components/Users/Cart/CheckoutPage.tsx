@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Typography, Button, CircularProgress } from "@mui/material";
 import { ArrowBackIos, WhatsApp, VerifiedUser, LocalShippingOutlined, PaymentsOutlined } from "@mui/icons-material";
 import { useCart } from "../../../contexts/CartProvider";
 import { useAuth } from "../../../contexts/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import { placeOrder } from "../../../api/orderService";
+import { getShippingRate } from "../../../api/shippingService";
 
 export default function CheckoutPage() {
 
@@ -61,15 +62,106 @@ export default function CheckoutPage() {
       subtotal * 0.03
     );
 
-  const shipping =
-    subtotal > 0
-      ? 100
-      : 0;
+  const [shipping, setShipping] = useState(0);
+  const [courier, setCourier] = useState<any>(null);
+  const [shippingLoading, setShippingLoading] = useState(true);
 
   const finalTotal =
     subtotal +
     gst +
-    shipping;
+    Number(shipping);
+
+  useEffect(() => {
+
+    if (!user?.pincode || items.length === 0) {
+      return;
+    }
+
+    const fetchShipping = async () => {
+
+      try {
+
+        setShippingLoading(true);
+
+        let totalWeight = 0;
+        let maxLength = 10;
+        let maxBreadth = 10;
+        let maxHeight = 10;
+
+        items.forEach((item: any) => {
+
+          totalWeight += Number(item.weight || 200) * Number(item.qty);
+
+          maxLength = Math.max(
+            maxLength,
+            Number(item.length || 10)
+          );
+
+          maxBreadth = Math.max(
+            maxBreadth,
+            Number(item.breadth || 10)
+          );
+
+          maxHeight = Math.max(
+            maxHeight,
+            Number(item.height || 10)
+          );
+
+        });
+
+        const res = await getShippingRate({
+
+          destination: user.pincode,
+
+          payment_type: "prepaid",
+
+          order_amount: subtotal,
+
+          weight: totalWeight,
+
+          length: maxLength,
+
+          breadth: maxBreadth,
+
+          height: maxHeight
+
+        });
+
+        setShipping(
+
+          Number(
+            res.lowestCourier.total_charges
+          )
+
+        );
+
+        setCourier(
+          res.lowestCourier
+        );
+
+      }
+
+      catch (err) {
+
+        console.error(err);
+
+        alert("Unable to calculate shipping.");
+
+        setShipping(0);
+
+      }
+
+      finally {
+
+        setShippingLoading(false);
+
+      }
+
+    };
+
+    fetchShipping();
+
+  }, [user?.pincode, subtotal, items]);
 
   const handlePlaceOrder = async () => {
 
@@ -121,7 +213,13 @@ export default function CheckoutPage() {
 
         pincode:
           user?.pincode ||
-          "N/A"
+          "N/A",
+
+        shippingCharge: shipping,
+
+        courierId: courier?.id,
+
+        courierName: courier?.name
 
       };
 
@@ -332,7 +430,7 @@ Date: ${new Date(order.createdAt).toLocaleString()}`
             fontWeight={600}
           >
 
-            ₹{subtotal.toLocaleString()}
+            ₹{subtotal.toFixed(2)}
 
           </Typography>
 
@@ -355,7 +453,7 @@ Date: ${new Date(order.createdAt).toLocaleString()}`
             fontWeight={600}
           >
 
-            ₹{gst.toLocaleString()}
+            ₹{gst.toFixed(2)}
 
           </Typography>
 
@@ -378,7 +476,16 @@ Date: ${new Date(order.createdAt).toLocaleString()}`
             fontWeight={600}
           >
 
-            ₹{shipping.toLocaleString()}
+            {
+              shippingLoading
+                ? (
+                  <CircularProgress
+                    size={16}
+                  />
+                )
+                : `₹${shipping.toFixed(2)}`
+            }
+            
 
           </Typography>
 
@@ -421,7 +528,7 @@ Date: ${new Date(order.createdAt).toLocaleString()}`
 
           >
 
-            ₹{finalTotal.toLocaleString()}
+            ₹{finalTotal.toFixed(2)}
 
           </Typography>
 
@@ -477,8 +584,7 @@ Date: ${new Date(order.createdAt).toLocaleString()}`
 
         size="large"
 
-        disabled={loading}
-
+        disabled={loading || shippingLoading}
         onClick={handlePlaceOrder}
 
         sx={{
