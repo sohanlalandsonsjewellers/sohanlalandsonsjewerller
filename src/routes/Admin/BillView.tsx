@@ -1,10 +1,18 @@
 import { useEffect, useState } from "react";
-import { Paper, Typography, Box, Button, CircularProgress } from "@mui/material";
-import { useParams } from "react-router-dom";
+import {
+  Paper,
+  Typography,
+  Box,
+  Button,
+  CircularProgress,
+} from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useParams, useNavigate } from "react-router-dom";
 import { getBillById } from "../../api/adminBill";
 
 export default function BillView() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [bill, setBill] = useState<any>(null);
   const [pdfBase64, setPdfBase64] = useState("");
@@ -46,13 +54,44 @@ export default function BillView() {
 
   function handlePrint() {
     const pdfWindow = window.open("");
-    pdfWindow!.document.write(
-      `<iframe width='100%' height='100%' src='data:application/pdf;base64,${pdfBase64}'></iframe>`
-    );
+
+    pdfWindow!.document.write(`
+      <html>
+        <head>
+          <title>${bill.invoiceNo}</title>
+          <style>
+            html,body{
+              margin:0;
+              width:100%;
+              height:100%;
+            }
+            iframe{
+              border:none;
+              width:100%;
+              height:100vh;
+            }
+          </style>
+        </head>
+        <body>
+          <iframe src="data:application/pdf;base64,${pdfBase64}"></iframe>
+        </body>
+      </html>
+    `);
   }
 
   return (
     <Paper sx={{ p: 3 }}>
+      {/* Back Button */}
+      <Box sx={{ mb: 2 }}>
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBackIcon />}
+          onClick={() => navigate("/admin/bills")}
+        >
+          Back to Bills
+        </Button>
+      </Box>
+
       <Typography variant="h4" sx={{ mb: 2 }}>
         Invoice Details
       </Typography>
@@ -62,16 +101,27 @@ export default function BillView() {
       <Typography>Customer: {bill.customerName}</Typography>
       <Typography>Phone: {bill.customerPhone}</Typography>
 
-      <Typography sx={{ mt: 3, fontWeight: 600 }}>Items:</Typography>
+      <Typography sx={{ mt: 3, fontWeight: 600 }}>
+        Items:
+      </Typography>
+
       {bill.items.map((it: any, i: number) => (
         <Typography key={i}>
           • {it.name} — ₹{it.price} × {it.qty}
         </Typography>
       ))}
 
-      <Typography sx={{ mt: 2 }}>Total: ₹{bill.totalAmount}</Typography>
-      <Typography>GST: ₹{bill.gstAmount}</Typography>
-      <Typography>Net: ₹{bill.netAmount}</Typography>
+      <Typography sx={{ mt: 2 }}>
+        Total: ₹{bill.totalAmount}
+      </Typography>
+
+      <Typography>
+        GST: ₹{bill.gstAmount}
+      </Typography>
+
+      <Typography>
+        Net: ₹{bill.netAmount}
+      </Typography>
 
       <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
         <Button variant="contained" onClick={handleDownload}>
