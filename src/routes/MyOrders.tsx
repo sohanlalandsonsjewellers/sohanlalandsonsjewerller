@@ -3,8 +3,6 @@ import { Container, Typography, Box, Paper, Divider, Chip, CircularProgress, But
 import { ArrowBackIos } from '@mui/icons-material';
 import {
   LocalShipping,
-  Inventory2,
-  ReceiptLong,
   OpenInNew
 } from "@mui/icons-material";
 import { useNavigate } from 'react-router-dom';
