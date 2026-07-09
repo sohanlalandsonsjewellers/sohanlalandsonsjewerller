@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { AppBar, Toolbar, Typography, Box, InputBase, IconButton, Badge, Menu, MenuItem, Paper, List, ListItem, ListItemText, Divider, ListItemIcon } from '@mui/material';
 import { ShoppingBagOutlined, FavoriteBorderOutlined, PersonOutlineOutlined, SearchOutlined, LogoutOutlined, LocalShippingOutlined, NotificationsOutlined, AccountCircleOutlined } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
@@ -6,6 +6,7 @@ import { useAuth } from '../../../contexts/AuthProvider';
 import { useCart } from '../../../contexts/CartProvider';
 import CartDrawer from '../Cart/CartDrawer';
 import TrustBar from './TrustBar';
+import { trackEvent } from "../../../api/analyticsService";
 
 interface MainNavbarProps {
   onSearch: (query: string) => void;
@@ -46,6 +47,7 @@ export default function MainNavbar({ onSearch, allProducts = [] }: MainNavbarPro
   }, []);
   const navigate = useNavigate();
   const [searchVal, setSearchVal] = useState("");
+  const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
@@ -60,6 +62,66 @@ export default function MainNavbar({ onSearch, allProducts = [] }: MainNavbarPro
 
     return { categories: [], products: filteredProds };
   }, [searchVal, allProducts]);
+
+  useEffect(() => {
+
+    return () => {
+
+      if (searchTimeout.current) {
+
+        clearTimeout(searchTimeout.current);
+
+      }
+
+    };
+
+  }, []);
+
+  const handleSearchChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+
+    const value = e.target.value;
+
+    setSearchVal(value);
+
+    onSearch(value);
+
+    if (searchTimeout.current) {
+
+      clearTimeout(searchTimeout.current);
+
+    }
+
+    searchTimeout.current = setTimeout(() => {
+
+      if (!value.trim()) return;
+
+      trackEvent({
+
+        eventType: "SEARCH",
+
+        page: window.location.pathname,
+
+        metadata: {
+
+          query: value.trim(),
+
+          source: "Navbar",
+
+          results: searchResults.products.length
+
+        }
+
+      }).catch((error) => {
+
+        console.error("Search Tracking Error:", error);
+
+      });
+
+    }, 600);
+
+  };
 
   const handleNavigation = (path: string) => {
     setSearchVal("");
@@ -95,7 +157,7 @@ export default function MainNavbar({ onSearch, allProducts = [] }: MainNavbarPro
           {/* Search Box */}
           <Box sx={{ gridColumn: { xs: 'span 2', md: 'auto' }, order: { xs: 3, md: 2 }, position: 'relative' }}>
             <Box sx={{ display: "flex", alignItems: "center", background: '#FFFFFF', border: '1px solid #4A0E17', borderRadius: "8px", height: "38px" }}>
-              <InputBase fullWidth placeholder="Search..." value={searchVal} onChange={(e) => { setSearchVal(e.target.value); onSearch(e.target.value); }} sx={{ px: 2, color: '#4A0E17', fontSize: '0.9rem' }} />
+              <InputBase fullWidth placeholder="Search..." value={searchVal} onChange={handleSearchChange} sx={{ px: 2, color: '#4A0E17', fontSize: '0.9rem' }} />
               <SearchOutlined sx={{ color: "#4A0E17", mr: 1 }} />
             </Box>
 
