@@ -46,6 +46,9 @@ import ShippingPolicy from "./components/Users/Footer/pages/ShippingPolicy";
 import ExchangePolicy from "./components/Users/Footer/pages/ExchangePolicy";
 import FAQs from "./components/Users/Footer/pages/FAQs";
 
+//AdminAnalytics
+import AdminAnalytics from "./components/Admin/AiAnalytics/AdminAnalytics";
+
 export default function App() {
   const { token, user } = useAuth();
   const [loading, setLoading] = useState(true);
@@ -111,6 +114,10 @@ export default function App() {
         <Route path="/shipping-policy" element={<ShippingPolicy />} />
         <Route path="/exchange-policy" element={<ExchangePolicy />} />
         <Route path="/faqs" element={<FAQs />} />
+
+
+        {/* ANALYTICS ROUTE */}
+        <Route path="/admin/analytics" element={user?.adminRole ? <AdminAnalytics /> : <Navigate to="/" replace />} />
 
         {/* FALLBACK */}
         <Route path="*" element={<Navigate to="/" replace />} />

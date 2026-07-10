@@ -10,9 +10,9 @@ export default function AdminLayout({ title, children }: any) {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const theme = useTheme();
-  
+
   // Triggers mobile layout when browser viewport width splits or goes below 900px scale
-  const isMobile = useMediaQuery(theme.breakpoints.down("md")); 
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
@@ -22,23 +22,23 @@ export default function AdminLayout({ title, children }: any) {
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#FDFBF7", maxWidth: "100vw", overflowX: "hidden" }}>
-      
+
       {/* HEADER BAR APPBAR */}
-      <AppBar 
-        position="fixed" 
-        sx={{ 
-          zIndex: (theme) => theme.zIndex.drawer + 2, 
-          bgcolor: "#141414", 
-          borderBottom: "1px solid rgba(229, 213, 188, 0.15)",
+      <AppBar
+        position="fixed"
+        sx={{
+          zIndex: (theme) => theme.zIndex.drawer + 2,
+          bgcolor:'#4A0E17"',
+          borderBottom: "1px solid rgba(74,14,23,.15)",
           boxShadow: "none"
         }}
       >
         <Toolbar sx={{ justifyContent: "space-between" }}>
           {isMobile && (
-            <IconButton 
-              color="inherit" 
-              onClick={() => setDrawerOpen(!drawerOpen)} 
-              edge="start" 
+            <IconButton
+              color="inherit"
+              onClick={() => setDrawerOpen(!drawerOpen)}
+              edge="start"
               sx={{ mr: 2, "&:hover": { bgcolor: "rgba(229,213,188,0.1)" } }}
             >
               <MenuIcon sx={{ color: "#E5D5BC" }} />
@@ -86,14 +86,14 @@ export default function AdminLayout({ title, children }: any) {
 
       {/* MOBILE COLLAPSIBLE DRAWER COMPONENT LAYOUT */}
       {isMobile && (
-        <Drawer 
-          open={drawerOpen} 
+        <Drawer
+          open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
           sx={{
             zIndex: (theme) => theme.zIndex.drawer + 1,
-            '& .MuiDrawer-paper': { 
-              width: drawerWidth, 
-              bgcolor: '#FFFFFF', 
+            '& .MuiDrawer-paper': {
+              width: drawerWidth,
+              bgcolor: '#FFFFFF',
               boxSizing: 'border-box',
               borderRight: "1px solid rgba(229, 213, 188, 0.15)"
             }
@@ -116,13 +116,13 @@ export default function AdminLayout({ title, children }: any) {
           flexShrink: 1,             // 🚀 CRITICAL: Forces elements to dynamically compress inside split screens parameters
           minWidth: 0,               // 🚀 CRITICAL: Prevents default grid layouts overflow threshold expansion breaks
           p: { xs: 2.5, sm: 3, md: 4 },
-          width: { xs: "100%", md: `calc(100% - ${drawerWidth}px)` }, 
+          width: { xs: "100%", md: `calc(100% - ${drawerWidth}px)` },
           minHeight: "100vh",
           boxSizing: "border-box",
           overflowX: "hidden"        // Strictly clamps down any bleeding margin leakage ranges
         }}
       >
-        <Toolbar /> 
+        <Toolbar />
         <Box sx={{ mt: 1, width: "100%" }}>
           {children}
         </Box>
