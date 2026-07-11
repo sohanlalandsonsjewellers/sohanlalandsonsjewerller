@@ -64,32 +64,6 @@ export default function AdminAnalytics() {
 
     }, [days]);
 
-    async function loadAnalytics() {
-
-        try {
-
-            setLoading(true);
-
-            const res =
-                await getAnalyticsOverview(days);
-
-            setOverview(res.overview);
-
-        }
-
-        catch (error) {
-
-            console.error(error);
-
-        }
-
-        finally {
-
-            setLoading(false);
-
-        }
-
-    }
 
     return (
 
