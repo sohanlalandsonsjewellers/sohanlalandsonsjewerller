@@ -6,7 +6,7 @@ import { useAuth } from "../../../contexts/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import { placeOrder } from "../../../api/orderService";
 import { getShippingRate } from "../../../api/shippingService";
-import { trackEvent } from "../../../api/analyticsService";
+import { trackEvent } from "../../../api/analytics";
 
 export default function CheckoutPage() {
 

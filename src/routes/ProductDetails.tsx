@@ -6,7 +6,7 @@ import MainNavbar from '../components/Users/Navbar/MainNavbar';
 import UserFooter from '../components/Users/Footer/MainFooter';
 import { getByIdPublic, getAllPublic } from '../api/product'; // 🚀 INJECTED: getAllPublic for backup search
 import { useCart } from '../contexts/CartProvider';
-import { trackEvent } from "../api/analyticsService";
+import { trackEvent } from "../api/analytics"; // 🚀 INJECTED: Analytics tracking for product view and wishlist actions
 
 export default function ProductDetails() {
   const { id } = useParams();

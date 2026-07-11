@@ -6,7 +6,7 @@ import { useAuth } from '../../../contexts/AuthProvider';
 import { useCart } from '../../../contexts/CartProvider';
 import CartDrawer from '../Cart/CartDrawer';
 import TrustBar from './TrustBar';
-import { trackEvent } from "../../../api/analyticsService";
+import { trackEvent } from "../../../api/analytics";
 
 interface MainNavbarProps {
   onSearch: (query: string) => void;
@@ -120,11 +120,13 @@ export default function MainNavbar({ onSearch, allProducts = [] }: MainNavbarPro
 
   useEffect(() => {
 
+    const timeout = searchTimeout.current;
+
     return () => {
 
-      if (searchTimeout.current) {
+      if (timeout) {
 
-        clearTimeout(searchTimeout.current);
+        clearTimeout(timeout);
 
       }
 

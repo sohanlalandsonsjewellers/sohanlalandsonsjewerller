@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useMemo } from "react";
-import { trackEvent } from "../api/analyticsService";
+import { trackEvent } from "../api/analytics";
 
 export type CartItem = {
   productId: string;

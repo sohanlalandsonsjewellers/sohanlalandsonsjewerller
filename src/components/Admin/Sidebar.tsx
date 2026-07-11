@@ -12,6 +12,7 @@ export default function Sidebar() {
     { label: "Bills", path: "/admin/bills" },
     { label: "Orders", path: "/admin/orders" },
     { label: "Analytics", path: "/admin/analytics" },
+    { label: "Business", path: "/admin/business" },
     { label: "Feedbacks", path: "/admin/feedbacks" }
 
   ];

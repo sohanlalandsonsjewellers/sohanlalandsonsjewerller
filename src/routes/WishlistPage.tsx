@@ -7,7 +7,7 @@ import UserFooter from "../components/Users/Footer/MainFooter";
 import { getAllPublic } from "../api/product";
 import { useCart } from "../contexts/CartProvider";
 import { optimizeImage } from "../utils/imageOptimizer";
-import { trackEvent } from "../api/analyticsService";
+import { trackEvent } from "../api/analytics";
 
 export default function WishlistPage() {
   const navigate = useNavigate();

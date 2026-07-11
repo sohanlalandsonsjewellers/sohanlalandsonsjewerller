@@ -1,7 +1,7 @@
 import { Card, CardMedia, CardContent, Typography, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { optimizeImage } from '../../../utils/imageOptimizer';
-import { trackEvent } from "../../../api/analyticsService";
+import { trackEvent } from "../../../api/analytics";
 
 interface ProductCardProps {
   product: any;

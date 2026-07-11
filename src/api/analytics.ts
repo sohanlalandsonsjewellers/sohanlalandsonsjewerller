@@ -4,18 +4,39 @@ import axiosInstance from "./axios";
    TRACK EVENT
 ========================================== */
 
-export async function trackEvent(data: any) {
+export interface TrackEventPayload {
+  eventType: string;
+  productId?: string;
+  orderId?: string;
+  sessionId?: string;
+  page?: string;
+  metadata?: Record<string, any>;
+}
 
-  const res = await axiosInstance.post(
+/**
+ * ============================================================
+ * Track Analytics Event
+ * ============================================================
+ */
 
-    "/analytics/event",
+export async function trackEvent(
+  payload: TrackEventPayload
+) {
+  try {
+    const response = await axiosInstance.post(
+      "/analytics/event",
+      payload
+    );
 
-    data
+    return response.data;
+  } catch (error: any) {
+    console.error(
+      "Analytics Event Error:",
+      error?.response?.data || error.message
+    );
 
-  );
-
-  return res.data;
-
+    return null;
+  }
 }
 
 /* ==========================================
@@ -135,6 +156,55 @@ export async function getRealtimeAnalytics() {
   const res = await axiosInstance.get(
 
     "/analytics/realtime"
+
+  );
+
+  return res.data;
+
+}
+
+
+/* ==========================================
+   BUSINESS DASHBOARD
+========================================== */
+
+export async function getBusinessDashboard() {
+
+  const res = await axiosInstance.get(
+    "/analytics/business"
+  );
+
+  return res.data;
+
+}
+
+export async function getTopCustomers() {
+
+  const res = await axiosInstance.get(
+    "/analytics/business/topCustomers"
+  );
+
+  return res.data;
+
+}
+
+export async function getCustomerInsights() {
+
+  const res = await axiosInstance.get(
+
+    "/analytics/business/customerinsights"
+
+  );
+
+  return res.data;
+
+}
+
+export async function getRecentOrders() {
+
+  const res = await axiosInstance.get(
+
+    "/analytics/business/recentorders"
 
   );
 
