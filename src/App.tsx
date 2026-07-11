@@ -46,6 +46,13 @@ import ShippingPolicy from "./components/Users/Footer/pages/ShippingPolicy";
 import ExchangePolicy from "./components/Users/Footer/pages/ExchangePolicy";
 import FAQs from "./components/Users/Footer/pages/FAQs";
 
+//AdminAnalytics
+import AdminAnalytics from "./components/Admin/AiAnalytics/AdminAnalytics";
+import BusinessDashboard from "./components/Admin/AiAnalytics/BusinessDashboard";
+import RevenueTrendChart from "./components/Admin/AiAnalytics/RevenueTrendChart";
+
+
+
 export default function App() {
   const { token, user } = useAuth();
   const [loading, setLoading] = useState(true);
@@ -86,11 +93,11 @@ export default function App() {
         <Route path="/admin/users" element={user?.adminRole ? <UserList /> : <Navigate to="/" replace />} />
         <Route path="/admin/users/create" element={user?.adminRole ? <UserCreate /> : <Navigate to="/" replace />} />
         <Route path="/admin/users/edit/:id" element={user?.adminRole ? <UserEdit /> : <Navigate to="/" replace />} />
-        
+
         <Route path="/admin/products" element={user?.adminRole ? <ProductList /> : <Navigate to="/" replace />} />
         <Route path="/admin/products/create" element={user?.adminRole ? <ProductCreate /> : <Navigate to="/" replace />} />
         <Route path="/admin/products/edit/:id" element={user?.adminRole ? <ProductEdit /> : <Navigate to="/" replace />} />
-        
+
         <Route path="/admin/bills" element={user?.adminRole ? <BillList /> : <Navigate to="/" replace />} />
         <Route path="/admin/bills/create" element={user?.adminRole ? <BillCreate /> : <Navigate to="/" replace />} />
         <Route path="/admin/bills/edit/:id" element={user?.adminRole ? <BillEdit /> : <Navigate to="/" replace />} />
@@ -111,6 +118,12 @@ export default function App() {
         <Route path="/shipping-policy" element={<ShippingPolicy />} />
         <Route path="/exchange-policy" element={<ExchangePolicy />} />
         <Route path="/faqs" element={<FAQs />} />
+
+
+        {/* ANALYTICS ROUTE */}
+        <Route path="/admin/analytics" element={user?.adminRole ? <AdminAnalytics /> : <Navigate to="/" replace />} />
+        <Route path="/admin/business" element={user?.adminRole ? <BusinessDashboard /> : <Navigate to="/" replace />} />
+        <Route path="/admin/revenue-trend" element={user?.adminRole ? <RevenueTrendChart /> : <Navigate to="/" replace />} />
 
         {/* FALLBACK */}
         <Route path="*" element={<Navigate to="/" replace />} />

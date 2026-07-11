@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useMemo } from "react";
+import { trackEvent } from "../api/analytics";
 
 export type CartItem = {
   productId: string;
@@ -7,7 +8,7 @@ export type CartItem = {
   qty: number;
   image?: string;
   sku?: string;
-  maxStock: number; 
+  maxStock: number;
 };
 
 type CartContextType = {
@@ -37,8 +38,27 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   }, [items]);
 
   const addToCart = (item: CartItem) => {
-    // 🚀 FIXED: Absolute stock tracking without hardcoding default 1 rules
-    const targetMaxStock = item.maxStock !== undefined && item.maxStock !== null ? Number(item.maxStock) : 1;
+
+    trackEvent({
+      eventType: "ADD_TO_CART",
+      productId: item.productId,
+      page: window.location.pathname,
+      metadata: {
+        productName: item.name,
+        price: item.price,
+        quantity: item.qty,
+        sku: item.sku,
+      },
+    }).catch((error) => {
+      console.error("Add To Cart Tracking Error:", error);
+    });
+
+    // 🚀 Existing logic (unchanged)
+    const targetMaxStock =
+      item.maxStock !== undefined && item.maxStock !== null
+        ? Number(item.maxStock)
+        : 1;
+
     const safeQty = item.qty <= 0 ? 1 : item.qty;
 
     setItems((prev) => {
@@ -46,21 +66,37 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (existing) {
         const newQty = existing.qty + safeQty;
-        // Cap strictly at whatever max stock is passed from the DB
-        const cappedQty = newQty > targetMaxStock ? targetMaxStock : newQty;
+        const cappedQty =
+          newQty > targetMaxStock ? targetMaxStock : newQty;
 
         return prev.map((p) =>
-          p.productId === item.productId 
-            ? { ...p, qty: cappedQty, maxStock: targetMaxStock } 
+          p.productId === item.productId
+            ? { ...p, qty: cappedQty, maxStock: targetMaxStock }
             : p
         );
       }
 
-      return [...prev, { ...item, qty: safeQty > targetMaxStock ? targetMaxStock : safeQty, maxStock: targetMaxStock }];
+      return [
+        ...prev,
+        {
+          ...item,
+          qty: safeQty > targetMaxStock ? targetMaxStock : safeQty,
+          maxStock: targetMaxStock,
+        },
+      ];
     });
   };
 
   const removeFromCart = (productId: string) => {
+
+    trackEvent({
+      eventType: "REMOVE_FROM_CART",
+      productId,
+      page: window.location.pathname,
+    }).catch((error) => {
+      console.error("Remove From Cart Tracking Error:", error);
+    });
+
     setItems((prev) => prev.filter((p) => p.productId !== productId));
   };
 

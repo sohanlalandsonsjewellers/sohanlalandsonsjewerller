@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Box, Typography, Button, CircularProgress, Divider, IconButton, Modal, Snackbar, Alert } from '@mui/material';
 import { FavoriteBorder, Favorite, ArrowBackIos, ArrowForwardIos, Close } from '@mui/icons-material';
@@ -6,6 +6,7 @@ import MainNavbar from '../components/Users/Navbar/MainNavbar';
 import UserFooter from '../components/Users/Footer/MainFooter';
 import { getByIdPublic, getAllPublic } from '../api/product'; // 🚀 INJECTED: getAllPublic for backup search
 import { useCart } from '../contexts/CartProvider';
+import { trackEvent } from "../api/analytics"; // 🚀 INJECTED: Analytics tracking for product view and wishlist actions
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -19,6 +20,7 @@ export default function ProductDetails() {
 
   // Dedicated stable state for keeping the numerical stock sequence
   const [verifiedStock, setVerifiedStock] = useState<number>(0);
+  const hasTrackedProductView = useRef(false);
 
   const [wishlist, setWishlist] = useState<string[]>(() => {
     try {
@@ -51,6 +53,7 @@ export default function ProductDetails() {
 
   useEffect(() => {
     if (!id) return;
+    hasTrackedProductView.current = false;
     async function loadProduct() {
       setLoading(true);
       try {
@@ -75,13 +78,13 @@ export default function ProductDetails() {
         // If single product API returns undefined/NaN, cross-reference data from full array catalog instantly!
         if (isNaN(parsedResult) || extractedRaw === undefined) {
           console.log("⚠️ Stock field missing in single product API. Launching background array catalog recovery check...");
-          
+
           const fallbackRes = await getAllPublic({ q: "", category: "all" });
           const allProducts = fallbackRes.products || [];
-          
+
           // Hunt down matching element row targets by exact dynamic ID matching parameters
           const matchedInCatalog = allProducts.find((p: any) => (p.id || p._id) === id);
-          
+
           if (matchedInCatalog) {
             const catalogStock = matchedInCatalog.Stock !== undefined ? matchedInCatalog.Stock : matchedInCatalog.stock;
             parsedResult = parseInt(catalogStock, 10);
@@ -90,6 +93,39 @@ export default function ProductDetails() {
         }
 
         setVerifiedStock(isNaN(parsedResult) ? 0 : parsedResult);
+        // ======================================================
+        // AI Analytics - Product View Tracking
+        // ======================================================
+
+        if (!hasTrackedProductView.current) {
+
+          hasTrackedProductView.current = true;
+
+          trackEvent({
+
+            eventType: "PRODUCT_VIEW",
+
+            productId: baseProduct.id || baseProduct._id,
+
+            page: window.location.pathname,
+
+            metadata: {
+
+              productName: baseProduct.name,
+
+              category: baseProduct.category,
+
+              price: baseProduct.price
+
+            }
+
+          }).catch((error) => {
+
+            console.error("Product View Tracking Error:", error);
+
+          });
+
+        }
 
       } catch (err) {
         console.error("Error running advanced structural product loader session loop:", err);
@@ -142,11 +178,11 @@ export default function ProductDetails() {
   const handleOriginalNextImage = (e: any) => { e.stopPropagation(); navigateNextImage(); };
 
   // Strict validation checker maps if count parameters outnumber zero limits
-  const isAvailableInInventory = verifiedStock > 0; 
+  const isAvailableInInventory = verifiedStock > 0;
 
   const handleAddToBag = () => {
     if (!isAvailableInInventory) return;
-    
+
     addToCart({
       productId: product.id || product._id,
       name: product.name,
@@ -154,7 +190,7 @@ export default function ProductDetails() {
       qty: 1,
       image: currentImage,
       sku: product.sku || 'N/A',
-      maxStock: verifiedStock 
+      maxStock: verifiedStock
     });
 
     setToastOpen(true);
@@ -164,15 +200,79 @@ export default function ProductDetails() {
   const isCurrentlyWishlisted = wishlist.includes(currentProductId);
 
   const handleToggleDetailsWishlist = () => {
-    let updatedWishlist: string[];
+
     if (isCurrentlyWishlisted) {
-      updatedWishlist = wishlist.filter(id => id !== currentProductId);
+
+      trackEvent({
+
+        eventType: "REMOVE_FROM_WISHLIST",
+
+        productId: currentProductId,
+
+        page: window.location.pathname,
+
+        metadata: {
+
+          productName: product.name,
+
+          category: product.category,
+
+          price: product.price
+
+        }
+
+      }).catch((error) => {
+
+        console.error("Remove Wishlist Tracking Error:", error);
+
+      });
+
     } else {
-      updatedWishlist = [...wishlist, currentProductId];
+
+      trackEvent({
+
+        eventType: "ADD_TO_WISHLIST",
+
+        productId: currentProductId,
+
+        page: window.location.pathname,
+
+        metadata: {
+
+          productName: product.name,
+
+          category: product.category,
+
+          price: product.price
+
+        }
+
+      }).catch((error) => {
+
+        console.error("Add Wishlist Tracking Error:", error);
+
+      });
+
     }
+
+    let updatedWishlist: string[];
+
+    if (isCurrentlyWishlisted) {
+
+      updatedWishlist = wishlist.filter(id => id !== currentProductId);
+
+    } else {
+
+      updatedWishlist = [...wishlist, currentProductId];
+
+    }
+
     localStorage.setItem("sls_wishlist", JSON.stringify(updatedWishlist));
+
     setWishlist(updatedWishlist);
+
     window.dispatchEvent(new Event("sls_wishlist_update"));
+
   };
 
   const hasValidWeight = product.weight && String(product.weight).toLowerCase() !== 'n/a' && Number(product.weight) !== 0;
@@ -191,7 +291,7 @@ export default function ProductDetails() {
         </Button>
 
         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: { xs: 4, md: 6, lg: 8 }, alignItems: 'flex-start' }}>
-          
+
           {/* Left Column Image Media Grid */}
           <Box sx={{ width: { xs: '100%', md: '50%' }, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Box
@@ -277,23 +377,23 @@ export default function ProductDetails() {
               )}
 
               <Box sx={{ display: 'flex', gap: 2 }}>
-                <Button 
-                  variant="contained" 
-                  fullWidth 
+                <Button
+                  variant="contained"
+                  fullWidth
                   onClick={handleAddToBag}
                   disabled={!isAvailableInInventory} // Unlocks dynamically only if catalog background verification succeeds!
-                  sx={{ 
-                    bgcolor: '#4A0E17', color: '#FDFBF7', py: { xs: 1.5, md: 2 }, letterSpacing: '0.15em', fontWeight: 600, borderRadius: 0, fontSize: { xs: '0.8rem', md: '0.9rem' }, 
+                  sx={{
+                    bgcolor: '#4A0E17', color: '#FDFBF7', py: { xs: 1.5, md: 2 }, letterSpacing: '0.15em', fontWeight: 600, borderRadius: 0, fontSize: { xs: '0.8rem', md: '0.9rem' },
                     '&:hover': { bgcolor: '#2C050B' },
                     '&:disabled': { bgcolor: '#A0A0A0 !important', color: '#FFF !important', cursor: 'not-allowed' }
                   }}
                 >
                   {isAvailableInInventory ? "ADD TO SHOPPING BAG" : "OUT OF STOCK"}
                 </Button>
-                
-                <IconButton 
+
+                <IconButton
                   onClick={handleToggleDetailsWishlist}
-                  sx={{ 
+                  sx={{
                     border: '1px solid #E5D5BC', px: 2, color: '#4A0E17', borderRadius: 0,
                     bgcolor: isCurrentlyWishlisted ? 'rgba(74, 14, 23, 0.05)' : 'transparent', transition: 'all 0.3s ease'
                   }}
