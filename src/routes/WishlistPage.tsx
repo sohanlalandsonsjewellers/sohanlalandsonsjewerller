@@ -7,6 +7,7 @@ import UserFooter from "../components/Users/Footer/MainFooter";
 import { getAllPublic } from "../api/product";
 import { useCart } from "../contexts/CartProvider";
 import { optimizeImage } from "../utils/imageOptimizer";
+import { trackEvent } from "../api/analytics";
 
 export default function WishlistPage() {
   const navigate = useNavigate();
@@ -29,6 +30,13 @@ export default function WishlistPage() {
   useEffect(() => { loadWishlistProducts(); }, []);
 
   const handleRemoveItem = (itemId: string) => {
+    trackEvent({
+      eventType: "REMOVE_FROM_WISHLIST",
+      productId: itemId,
+      page: window.location.pathname,
+    }).catch((error) => {
+      console.error("Remove Wishlist Tracking Error:", error);
+    });
     const saved = localStorage.getItem("sls_wishlist");
     let ids: string[] = saved ? JSON.parse(saved) : [];
     ids = ids.filter(id => id !== itemId);

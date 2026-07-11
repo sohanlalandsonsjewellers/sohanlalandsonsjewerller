@@ -6,6 +6,7 @@ import { useAuth } from "../../../contexts/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import { placeOrder } from "../../../api/orderService";
 import { getShippingRate } from "../../../api/shippingService";
+import { trackEvent } from "../../../api/analytics";
 
 export default function CheckoutPage() {
 
@@ -231,6 +232,64 @@ export default function CheckoutPage() {
 
       const order =
         res.order;
+      Promise.all(
+
+        order.items.map((item: any) =>
+
+          trackEvent({
+
+            eventType: "ORDER_CREATED",
+
+            productId: item.productId || item.id,
+
+            orderId: order.id,
+
+            page: window.location.pathname,
+
+            metadata: {
+
+              orderNumber: order.id,
+
+              productName: item.name,
+
+              sku: item.sku,
+
+              quantity: item.qty,
+
+              price: item.price,
+
+              totalItems: order.items.length,
+
+              subtotal: order.adminPrice,
+
+              gst: order.gstAmount,
+
+              shipping: order.shippingCharge,
+
+              discount: order.discount,
+
+              finalAmount:
+                Number(order.adminPrice) +
+                Number(order.gstAmount) +
+                Number(order.shippingCharge) -
+                Number(order.discount),
+
+              paymentMethod: "WHATSAPP",
+
+              courier: order.courierName
+
+            }
+
+          })
+
+        )
+
+      ).catch((err) => {
+
+        console.error("Order Analytics Error:", err);
+
+      });
+
 
       const itemsList =
         order.items.map(
@@ -485,7 +544,7 @@ Date: ${new Date(order.createdAt).toLocaleString()}`
                 )
                 : `₹${shipping.toFixed(2)}`
             }
-            
+
 
           </Typography>
 

@@ -1,7 +1,7 @@
-import React from 'react';
 import { Card, CardMedia, CardContent, Typography, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { optimizeImage } from '../../../utils/imageOptimizer'; 
+import { optimizeImage } from '../../../utils/imageOptimizer';
+import { trackEvent } from "../../../api/analytics";
 
 interface ProductCardProps {
   product: any;
@@ -9,19 +9,38 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const navigate = useNavigate();
-  const { name, images, category } = product; 
+  const { name, images, category } = product;
+
+  const handleProductClick = () => {
+
+    trackEvent({
+      eventType: "PRODUCT_CLICK",
+      productId: product.id || product._id,
+      page: window.location.pathname,
+      metadata: {
+        productName: product.name,
+        category: product.category
+      }
+    }).catch((error) => {
+      console.error("Analytics Tracking Error:", error);
+    });
+
+    // Existing navigation (no delay)
+    navigate(`/collection/${encodeURIComponent(name.trim())}`);
+
+  };
 
   // 🚀 SMART MODEL IMAGE EXTRACTOR: Target image index 1 or 2 if available for contextual colored backgrounds
-  const activeRawImage = images && images.length > 1 
+  const activeRawImage = images && images.length > 1
     ? (images[1].includes('placeholder') && images[2] ? images[2] : images[1]) // Tries index 1 first, then index 2
     : (images && images[0] ? images[0] : 'https://via.placeholder.com/400x500?text=Premium+Jewellery');
 
   return (
-    <Card 
-      onClick={() => navigate(`/collection/${encodeURIComponent(name.trim())}`)} 
-      sx={{ 
-        position: 'relative', 
-        border: 'none', 
+    <Card
+      onClick={handleProductClick}
+      sx={{
+        position: 'relative',
+        border: 'none',
         bgcolor: 'transparent',
         boxShadow: 'none',
         cursor: 'pointer'
@@ -31,10 +50,10 @@ export default function ProductCard({ product }: ProductCardProps) {
       <Box sx={{ position: 'relative', overflow: 'hidden', pt: '125%', bgcolor: 'transparent' }}>
         <CardMedia
           component="img"
-          image={optimizeImage(activeRawImage)} 
+          image={optimizeImage(activeRawImage)}
           alt={name}
           sx={{
-            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', 
+            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
             objectFit: 'cover' // Makes sure model images scale natively without squash cuts
           }}
         />
@@ -42,20 +61,20 @@ export default function ProductCard({ product }: ProductCardProps) {
 
       {/* Details Display Workspace */}
       <CardContent sx={{ px: 0, py: 1.8, textAlign: 'center', bgcolor: 'transparent' }}>
-        <Typography 
-          variant="caption" 
-          sx={{ 
-            textTransform: 'uppercase', color: '#8E8370', letterSpacing: '0.22em', 
-            fontSize: '0.62rem', fontWeight: 700, display: 'block', mb: 0.8 
+        <Typography
+          variant="caption"
+          sx={{
+            textTransform: 'uppercase', color: '#8E8370', letterSpacing: '0.22em',
+            fontSize: '0.62rem', fontWeight: 700, display: 'block', mb: 0.8
           }}
         >
           {category ? category.split(' ')[0] : 'Luxury'}
         </Typography>
-        
-        <Typography 
-          variant="body1" 
-          sx={{ 
-            fontFamily: '"Playfair Display", serif', fontWeight: 500, 
+
+        <Typography
+          variant="body1"
+          sx={{
+            fontFamily: '"Playfair Display", serif', fontWeight: 500,
             color: '#4A0E17 !important', fontSize: '1.08rem', letterSpacing: '0.03em'
           }}
         >
