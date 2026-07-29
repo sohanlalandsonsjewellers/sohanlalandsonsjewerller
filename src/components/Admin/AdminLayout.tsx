@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { AppBar, Toolbar, Typography, IconButton, Box, Drawer, Menu, MenuItem, Button, useTheme, useMediaQuery } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -6,7 +6,12 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { useAuth } from "../../contexts/AuthProvider";
 
-export default function AdminLayout({ title, children }: any) {
+interface AdminLayoutProps {
+  title: string;
+  children: ReactNode;
+}
+
+export default function AdminLayout({ title, children }: AdminLayoutProps) {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const theme = useTheme();
@@ -28,7 +33,7 @@ export default function AdminLayout({ title, children }: any) {
         position="fixed"
         sx={{
           zIndex: (theme) => theme.zIndex.drawer + 2,
-          bgcolor:'#4A0E17"',
+          bgcolor: '#4A0E17',
           borderBottom: "1px solid rgba(74,14,23,.15)",
           boxShadow: "none"
         }}
