@@ -47,9 +47,12 @@ import ExchangePolicy from "./components/Users/Footer/pages/ExchangePolicy";
 import FAQs from "./components/Users/Footer/pages/FAQs";
 
 //AdminAnalytics
-import AdminAnalytics from "./components/Admin/AiAnalytics/AdminAnalytics";
-import BusinessDashboard from "./components/Admin/AiAnalytics/BusinessDashboard";
-import RevenueTrendChart from "./components/Admin/AiAnalytics/RevenueTrendChart";
+import AdminAnalytics from "./components/Admin/BEAnalytics/AdminAnalytics";
+import BusinessDashboard from "./components/Admin/BEAnalytics/BusinessDashboard";
+import RevenueTrendChart from "./components/Admin/BEAnalytics/RevenueTrendChart";
+
+//AdminAiAnalytics
+import AiDashboard from "./components/Admin/AiAnalytics/AiDashboard";
 
 
 
@@ -124,6 +127,9 @@ export default function App() {
         <Route path="/admin/analytics" element={user?.adminRole ? <AdminAnalytics /> : <Navigate to="/" replace />} />
         <Route path="/admin/business" element={user?.adminRole ? <BusinessDashboard /> : <Navigate to="/" replace />} />
         <Route path="/admin/revenue-trend" element={user?.adminRole ? <RevenueTrendChart /> : <Navigate to="/" replace />} />
+
+        {/* AI ANALYTICS ROUTE */}
+        <Route path="/admin/ai-dashboard" element={ user?.adminRole ? <AiDashboard /> : <Navigate to="/" replace /> }/>
 
         {/* FALLBACK */}
         <Route path="*" element={<Navigate to="/" replace />} />

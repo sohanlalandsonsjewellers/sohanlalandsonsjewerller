@@ -13,6 +13,7 @@ export default function Sidebar() {
     { label: "Orders", path: "/admin/orders" },
     { label: "Analytics", path: "/admin/analytics" },
     { label: "Business", path: "/admin/business" },
+    { label: "AI Dashboard", path: "/admin/ai-dashboard" },
     { label: "Feedbacks", path: "/admin/feedbacks" }
 
   ];
