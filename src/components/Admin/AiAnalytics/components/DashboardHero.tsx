@@ -237,7 +237,7 @@ export default function DashboardHero({
                             value={`₹${summary.inventoryValue.toLocaleString()}`}
                             icon={<Inventory2RoundedIcon />}
                             color="#EF6C00"
-                        />
+                        /> 
 
                     </Grid>
 
