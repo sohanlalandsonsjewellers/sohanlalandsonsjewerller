@@ -52,7 +52,8 @@ import BusinessDashboard from "./components/Admin/BEAnalytics/BusinessDashboard"
 import RevenueTrendChart from "./components/Admin/BEAnalytics/RevenueTrendChart";
 
 //AdminAiAnalytics
-import AiDashboard from "./components/Admin/AiAnalytics/AiDashboard";
+
+import BusinessSummaryPage from "./components/Admin/AiAnalytics/pages/BusinessSummaryPage";
 
 
 
@@ -129,7 +130,7 @@ export default function App() {
         <Route path="/admin/revenue-trend" element={user?.adminRole ? <RevenueTrendChart /> : <Navigate to="/" replace />} />
 
         {/* AI ANALYTICS ROUTE */}
-        <Route path="/admin/ai-dashboard" element={ user?.adminRole ? <AiDashboard /> : <Navigate to="/" replace /> }/>
+        <Route path="/admin/ai-dashboard" element={user?.adminRole ? <BusinessSummaryPage /> : <Navigate to="/" replace />} />
 
         {/* FALLBACK */}
         <Route path="*" element={<Navigate to="/" replace />} />
