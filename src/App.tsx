@@ -55,6 +55,7 @@ import RevenueTrendChart from "./components/Admin/BEAnalytics/RevenueTrendChart"
 
 import BusinessSummaryPage from "./components/Admin/AiAnalytics/pages/BusinessSummaryPage";
 import CustomerAnalyticsPage from "./components/Admin/AiAnalytics/pages/CustomerAnalyticsPage"; 
+import InventoryAnalyticsPage from "./components/Admin/AiAnalytics/pages/InventoryAnalyticsPage";
 
 
 
@@ -147,6 +148,15 @@ export default function App() {
     element={
         user?.adminRole
             ? <CustomerAnalyticsPage />
+            : <Navigate to="/" replace />
+    }
+/>
+
+<Route
+    path="/admin/inventory-analytics"
+    element={
+        user?.adminRole
+            ? <InventoryAnalyticsPage />
             : <Navigate to="/" replace />
     }
 />
