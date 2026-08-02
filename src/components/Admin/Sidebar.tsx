@@ -14,6 +14,7 @@ export default function Sidebar() {
     { label: "Analytics", path: "/admin/analytics" },
     { label: "Business", path: "/admin/business" },
     { label: "AI Dashboard", path: "/admin/ai-dashboard" },
+    { label: "AI Customer Analytics", path: "/admin/customer-analytics" },
     { label: "Feedbacks", path: "/admin/feedbacks" }
 
   ];

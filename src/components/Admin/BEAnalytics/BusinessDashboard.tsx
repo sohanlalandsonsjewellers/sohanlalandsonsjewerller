@@ -12,7 +12,7 @@ import RevenueTrendChart from "./RevenueTrendChart";
 import TopCustomers from "./TopCustomers";
 import CustomerInsights from "./CustomerInsights";
 import RecentOrders from "./RecentOrders";
-import { getBusinessDashboard, getTopCustomers  } from "../../../api/analytics";
+import { getBusinessDashboard, getTopCustomers } from "../../../api/analytics";
 
 
 export default function BusinessDashboard() {
@@ -67,7 +67,7 @@ export default function BusinessDashboard() {
 
     }
 
-    if (loading) {
+    if (loading || !dashboard) {
 
         return (
 
@@ -166,15 +166,20 @@ export default function BusinessDashboard() {
 
         <AdminLayout title="Business Dashboard">
 
-            <Box p={1}>
+            <Box sx={{ p: { xs: 1, sm: 1.5, md: 2 } }}>
 
                 <Typography
                     variant="h4"
                     sx={{
-                        mb: 3,
+                        mb: { xs: 2, sm: 2.5, md: 3 },
                         color: "#4A0E17",
                         fontWeight: 700,
-                        fontFamily: '"Playfair Display", serif'
+                        fontFamily: '"Playfair Display", serif',
+                        fontSize: {
+                            xs: "1.5rem",
+                            sm: "1.8rem",
+                            md: "2.125rem"
+                        }
                     }}
                 >
 
@@ -182,33 +187,48 @@ export default function BusinessDashboard() {
 
                 </Typography>
 
-                <Grid container spacing={3}>
+                <Grid container spacing={{ xs: 1.5, sm: 2, md: 3 }}>
 
                     {cards.map((card) => (
 
                         <Grid
                             key={card.title}
                             size={{
-                                xs: 12,
-                                sm: 6,
-                                md: 3
+                                xs: 6,
+                                sm: 4,
+                                md: 3,
+                                lg: 3
                             }}
                         >
 
                             <Paper
                                 elevation={0}
                                 sx={{
-                                    p: 3,
+                                    p: { xs: 1.5, sm: 2, md: 3 },
                                     height: "100%",
+                                    minHeight: { xs: 90, sm: 105, md: 120 },
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    justifyContent: "space-between",
                                     bgcolor: "#FFFDF9",
-                                    border: "1px solid rgba(229,213,188,.35)"
+                                    border: "1px solid rgba(229,213,188,.35)",
+                                    borderRadius: { xs: 2, md: 3 },
+                                    overflow: "hidden"
                                 }}
                             >
 
                                 <Typography
                                     sx={{
                                         color: "#777",
-                                        fontSize: ".9rem"
+                                        fontSize: {
+                                            xs: ".72rem",
+                                            sm: ".8rem",
+                                            md: ".9rem"
+                                        },
+                                        lineHeight: 1.3,
+                                        whiteSpace: "nowrap",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis"
                                     }}
                                 >
 
@@ -217,11 +237,18 @@ export default function BusinessDashboard() {
                                 </Typography>
 
                                 <Typography
-                                    variant="h4"
                                     sx={{
-                                        mt: 2,
+                                        mt: { xs: 1, md: 2 },
                                         color: "#4A0E17",
-                                        fontWeight: 700
+                                        fontWeight: 700,
+                                        fontSize: {
+                                            xs: "1.1rem",
+                                            sm: "1.35rem",
+                                            md: "1.7rem",
+                                            lg: "2rem"
+                                        },
+                                        lineHeight: 1.2,
+                                        wordBreak: "break-word"
                                     }}
                                 >
 
@@ -237,10 +264,21 @@ export default function BusinessDashboard() {
 
                 </Grid>
 
-                <RevenueTrendChart />
-                <TopCustomers customers={customers}/>
-                <CustomerInsights />
-                <RecentOrders />
+                <Box sx={{ mt: { xs: 2, sm: 2.5, md: 3 } }}>
+                    <RevenueTrendChart />
+                </Box>
+
+                <Box sx={{ mt: { xs: 2, sm: 2.5, md: 3 } }}>
+                    <TopCustomers customers={customers} />
+                </Box>
+
+                <Box sx={{ mt: { xs: 2, sm: 2.5, md: 3 } }}>
+                    <CustomerInsights />
+                </Box>
+
+                <Box sx={{ mt: { xs: 2, sm: 2.5, md: 3 } }}>
+                    <RecentOrders />
+                </Box>
 
             </Box>
 

@@ -1,296 +1,281 @@
 import {
-    Alert,
     Box,
-    Button,
     Container,
-    FormControl,
     Grid,
-    InputLabel,
-    MenuItem,
-    Select,
-    Stack,
     Typography,
 } from "@mui/material";
 
-import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
+import { useState } from "react";
+
+import AdminLayout from "../../AdminLayout";
 
 import useBusinessSummary from "../../../../hooks/useBusinessSummary";
 
+import DashboardHeader from "../../../../components/Admin/AiAnalytics/components/common/DashboardHeader";
+import DashboardFilters from "../../../../components/Admin/AiAnalytics/components/common/DashboardFilters";
+import LoadingScreen from "../../../../components/Admin/AiAnalytics/components/common/LoadingScreen";
+import ErrorState from "../../../../components/Admin/AiAnalytics/components/common/ErrorState";
+import EmptyState from "../../../../components/Admin/AiAnalytics/components/common/EmptyState";
+
 import {
+
     AlertsCard,
+
     BusinessScoreCard,
+
     CustomerHealthCard,
-    DashboardSkeleton,
-    EmptyState,
+
     InventoryHealthCard,
+
     KPICards,
+
     RecommendationsCard,
+
     SalesHealthCard,
+
     TopSellingProductsTable,
+
 } from "../components/BusinessSummary";
-import AdminLayout from "../../AdminLayout";
-import { useState } from "react";
 
 const BusinessSummaryPage = () => {
 
     const {
+
         data,
+
         loading,
+
         error,
+
         refresh,
+
     } = useBusinessSummary();
+
     const [range, setRange] = useState("30");
+
+    /* ===========================================================
+       LOADING
+    =========================================================== */
 
     if (loading) {
 
         return (
 
-            <Container
-                maxWidth="xl"
-                sx={{
-                    py: 4,
-                }}
-            >
+            <AdminLayout title="AI Business Dashboard">
 
-                <DashboardSkeleton />
+                <LoadingScreen
 
-            </Container>
+                    title="Loading Business Summary"
+
+                    subtitle="Preparing AI business insights..."
+
+                />
+
+            </AdminLayout>
 
         );
 
     }
+
+    /* ===========================================================
+       ERROR
+    =========================================================== */
 
     if (error) {
 
         return (
 
-            <Container
-                maxWidth="xl"
-                sx={{
-                    py: 4,
-                }}
-            >
+            <AdminLayout title="AI Business Dashboard">
 
-                <Alert
-                    severity="error"
-                    sx={{
-                        mb: 2,
-                    }}
-                >
+                <ErrorState
 
-                    {error}
+                    title="Business Summary Failed"
 
-                </Alert>
+                    message={error}
 
-                <Button
-                    onClick={() => refresh(Number(range))}
-                >
+                    onRetry={() =>
 
-                    Retry
+                        refresh(Number(range))
 
-                </Button>
+                    }
 
-            </Container>
+                />
+
+            </AdminLayout>
 
         );
 
     }
+
+    /* ===========================================================
+       EMPTY
+    =========================================================== */
 
     if (!data) {
 
         return (
 
-            <Container
-                maxWidth="xl"
-                sx={{
-                    py: 4,
-                }}
-            >
+            <AdminLayout title="AI Business Dashboard">
 
                 <EmptyState
-                    onRetry={refresh}
+
+                    title="No Business Data"
+
+                    message="No business analytics are available for the selected period."
+
+                    onRefresh={() =>
+
+                        refresh(Number(range))
+
+                    }
+
                 />
 
-            </Container>
+            </AdminLayout>
 
         );
 
     }
+
+    /* ===========================================================
+       PAGE
+    =========================================================== */
 
     return (
 
         <AdminLayout title="AI Business Dashboard">
 
             <Container
+
                 maxWidth="xl"
+
                 sx={{
-                    py: 4,
+
+                    py: 4
+
                 }}
+
             >
 
-                {/* ================= HEADER ================= */}
+                {/* ===========================================================
+                   HEADER
+                =========================================================== */}
 
-                <Stack
+                <DashboardHeader
 
-                    direction={{
-                        xs: "column",
-                        md: "row",
+                    title="AI Business Dashboard"
+
+                    subtitle="Complete AI-powered overview of revenue, inventory, customers, sales performance and business health."
+
+                    badgeLabel="Business Score"
+
+                    badgeValue={`${data.businessScore.score}/100`}
+
+                    generatedAt={data.generatedAt}
+
+                    loading={loading}
+
+                    onRefresh={() =>
+
+                        refresh(Number(range))
+
+                    }
+
+                />
+
+                {/* ===========================================================
+                   FILTERS
+                =========================================================== */}
+
+                <DashboardFilters
+
+                    loading={loading}
+
+                    showDays
+
+                    days={Number(range)}
+
+                    onDaysChange={(value) => {
+
+                        setRange(
+
+                            String(value)
+
+                        );
+
+                        refresh(value);
+
                     }}
 
-                    justifyContent="space-between"
+                    onRefresh={() =>
 
-                    alignItems={{
-                        xs: "flex-start",
-                        md: "center",
-                    }}
+                        refresh(Number(range))
 
-                    spacing={2}
+                    }
 
-                    mb={4}
+                />
 
-                >
-
-                    <Box>
-
-                        <Typography
-
-                            variant="h4"
-
-                            fontWeight={700}
-
-                        >
-
-                            AI Business Dashboard
-
-                        </Typography>
-
-                        <Typography
-
-                            color="text.secondary"
-
-                        >
-
-                            Smart insights powered by AI Analytics
-
-                        </Typography>
-
-                    </Box>
-
-                    <Stack
-
-                        direction="row"
-
-                        spacing={2}
-
-                    >
-
-                        <FormControl
-                            size="small"
-                            sx={{
-                                minWidth: 170,
-                            }}
-                        >
-
-                            <InputLabel>
-
-                                Date Range
-
-                            </InputLabel>
-
-                            <Select
-                                value={range}
-                                label="Date Range"
-                                onChange={(e) => {
-
-                                    const value = e.target.value;
-
-                                    setRange(value);
-
-                                    refresh(Number(value));
-
-                                }}
-                            >
-
-                                <MenuItem value="7">
-
-                                    Last 7 Days
-
-                                </MenuItem>
-
-                                <MenuItem value="30">
-
-                                    Last 30 Days
-
-                                </MenuItem>
-
-                                <MenuItem value="90">
-
-                                    Last 90 Days
-
-                                </MenuItem>
-
-                                <MenuItem value="365">
-
-                                    Last Year
-
-                                </MenuItem>
-
-                            </Select>
-
-                        </FormControl>
-
-                        <Button
-
-                            variant="contained"
-
-                            startIcon={<RefreshRoundedIcon />}
-
-                            onClick={() => refresh(Number(range))}
-
-                        >
-
-                            Refresh
-
-                        </Button>
-
-                    </Stack>
-
-                </Stack>
-
-                {/* ================= BUSINESS SCORE + KPI ================= */}
+                {/* ===========================================================
+                   BUSINESS SCORE + KPI
+                =========================================================== */}
 
                 <Grid
+
                     container
+
                     spacing={3}
+
                 >
 
                     <Grid
+
                         size={{
-                            xs: 12,
+
+                            xs: 12
+
                         }}
+
                     >
 
                         <BusinessScoreCard
-                            data={data.businessScore}
+
+                            data={
+
+                                data.businessScore
+
+                            }
+
                         />
 
                     </Grid>
 
                     <Grid
+
                         size={{
-                            xs: 12,
+
+                            xs: 12
+
                         }}
+
                     >
 
                         <KPICards
-                            summary={data.summary}
+
+                            summary={
+
+                                data.summary
+
+                            }
+
                         />
 
                     </Grid>
 
                 </Grid>
 
-                {/* ================= HEALTH SECTION ================= */}
+                {/* ===========================================================
+                   HEALTH SECTION
+                =========================================================== */}
 
                 <Grid
 
@@ -300,151 +285,272 @@ const BusinessSummaryPage = () => {
 
                     sx={{
 
-                        mt: 1,
+                        mt: 1
 
                     }}
 
                 >
 
                     <Grid
+
                         size={{
+
                             xs: 12,
-                            md: 4,
+
+                            md: 4
+
                         }}
+
                     >
 
                         <SalesHealthCard
-                            data={data.salesHealth}
+
+                            data={
+
+                                data.salesHealth
+
+                            }
+
                         />
 
                     </Grid>
 
                     <Grid
+
                         size={{
+
                             xs: 12,
-                            md: 4,
+
+                            md: 4
+
                         }}
+
                     >
 
                         <InventoryHealthCard
-                            data={data.inventoryHealth}
+
+                            data={
+
+                                data.inventoryHealth
+
+                            }
+
                         />
 
                     </Grid>
 
                     <Grid
+
                         size={{
+
                             xs: 12,
-                            md: 4,
+
+                            md: 4
+
                         }}
+
                     >
 
                         <CustomerHealthCard
-                            data={data.customerHealth}
+
+                            data={
+
+                                data.customerHealth
+
+                            }
+
                         />
 
                     </Grid>
 
                 </Grid>
 
-                {/* ================= TOP SELLING PRODUCTS ================= */}
+                {/* ===========================================================
+                   TOP SELLING PRODUCTS
+                =========================================================== */}
 
                 <Grid
+
                     container
+
                     spacing={3}
+
                     sx={{
-                        mt: 1,
+
+                        mt: 1
+
                     }}
+
                 >
 
                     <Grid
+
                         size={{
-                            xs: 12,
+
+                            xs: 12
+
                         }}
+
                     >
 
                         <TopSellingProductsTable
-                            products={data.dashboard.topSellingProducts}
+
+                            products={
+
+                                data.dashboard.topSellingProducts
+
+                            }
+
                         />
 
                     </Grid>
 
                 </Grid>
 
-                {/* ================= ALERTS & RECOMMENDATIONS ================= */}
+                {/* ===========================================================
+                   ALERTS & RECOMMENDATIONS
+                =========================================================== */}
 
                 <Grid
+
                     container
+
                     spacing={3}
+
                     sx={{
-                        mt: 1,
+
+                        mt: 1
+
                     }}
+
                 >
 
                     <Grid
+
                         size={{
+
                             xs: 12,
-                            lg: 5,
+
+                            lg: 5
+
                         }}
+
                     >
 
                         <AlertsCard
-                            alerts={data.alerts}
+
+                            alerts={
+
+                                data.alerts
+
+                            }
+
                         />
 
                     </Grid>
 
                     <Grid
+
                         size={{
+
                             xs: 12,
-                            lg: 7,
+
+                            lg: 7
+
                         }}
+
                     >
 
                         <RecommendationsCard
-                            recommendations={data.recommendations}
+
+                            recommendations={
+
+                                data.recommendations
+
+                            }
+
                         />
 
                     </Grid>
 
                 </Grid>
 
-                {/* ================= FOOTER ================= */}
+                {/* ===========================================================
+                   FOOTER
+                =========================================================== */}
 
                 <Box
+
                     sx={{
+
                         mt: 5,
-                        py: 2,
-                        borderTop: "1px solid",
-                        borderColor: "divider",
+
+                        py: 3,
+
                         display: "flex",
+
                         justifyContent: "space-between",
+
                         alignItems: {
+
                             xs: "flex-start",
-                            md: "center",
+
+                            md: "center"
+
                         },
+
                         flexDirection: {
+
                             xs: "column",
-                            md: "row",
+
+                            md: "row"
+
                         },
+
                         gap: 1,
+
+                        borderTop:
+
+                            "1px solid rgba(184,155,115,.18)"
+
                     }}
+
                 >
 
                     <Typography
+
                         variant="body2"
+
                         color="text.secondary"
+
                     >
+
                         Last Updated :
+
                         {" "}
-                        {new Date(data.generatedAt).toLocaleString()}
+
+                        {
+
+                            new Date(
+
+                                data.generatedAt
+
+                            ).toLocaleString()
+
+                        }
+
                     </Typography>
 
                     <Typography
+
                         variant="body2"
+
                         color="text.secondary"
+
                     >
+
                         AI Powered Business Intelligence Dashboard
+
                     </Typography>
 
                 </Box>
