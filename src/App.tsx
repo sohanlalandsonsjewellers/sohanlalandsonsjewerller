@@ -57,6 +57,7 @@ import BusinessSummaryPage from "./components/Admin/AiAnalytics/pages/BusinessSu
 import CustomerAnalyticsPage from "./components/Admin/AiAnalytics/pages/CustomerAnalyticsPage";
 import InventoryAnalyticsPage from "./components/Admin/AiAnalytics/pages/InventoryAnalyticsPage";
 import ProductPerformancePage from "./components/Admin/AiAnalytics/pages/ProductPerformancePage";
+import PriceOptimizationPage from "./components/Admin/AiAnalytics/pages/PriceOptimizationPage";
 
 
 
@@ -167,6 +168,15 @@ export default function App() {
           element={
             user?.adminRole
               ? <ProductPerformancePage />
+              : <Navigate to="/" replace />
+          }
+        />
+
+        <Route
+          path="/admin/price-optimization"
+          element={
+            user?.adminRole
+              ? <PriceOptimizationPage />
               : <Navigate to="/" replace />
           }
         />
