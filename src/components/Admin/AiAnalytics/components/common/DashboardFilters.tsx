@@ -33,6 +33,14 @@ interface DashboardFiltersProps {
 
     showAtRisk?: boolean;
 
+    showCategory?: boolean;
+
+    showGrade?: boolean;
+
+    showMoving?: boolean;
+
+    showTrend?: boolean;
+
     /* Values */
 
     search?: string;
@@ -46,6 +54,14 @@ interface DashboardFiltersProps {
     customerType?: string;
 
     atRisk?: boolean;
+
+    category?: string;
+
+    grade?: string;
+
+    moving?: string;
+
+    trend?: string;
 
     /* Events */
 
@@ -61,6 +77,14 @@ interface DashboardFiltersProps {
 
     onAtRiskChange?: (checked: boolean) => void;
 
+    onCategoryChange?: (value?: string) => void;
+
+    onGradeChange?: (value?: string) => void;
+
+    onMovingChange?: (value?: string) => void;
+
+    onTrendChange?: (value?: string) => void;
+
     onRefresh?: () => void;
 
 }
@@ -73,18 +97,30 @@ export default function DashboardFilters({
     showSegment,
     showCustomerType,
     showAtRisk,
+    showCategory,
+    showGrade,
+    showMoving,
+    showTrend,
     search,
     days,
     sort,
     segment,
     customerType,
     atRisk,
+    category,
+    grade,
+    moving,
+    trend,
     onSearchChange,
     onDaysChange,
     onSortChange,
     onSegmentChange,
     onCustomerTypeChange,
     onAtRiskChange,
+    onCategoryChange,
+    onGradeChange,
+    onMovingChange,
+    onTrendChange,
     onRefresh
 }: DashboardFiltersProps) {
 
@@ -511,6 +547,342 @@ export default function DashboardFilters({
                                 <MenuItem value="new">
 
                                     New
+
+                                </MenuItem>
+
+                            </Select>
+
+                        </FormControl>
+
+                    </Grid>
+
+                )}
+
+                {showCategory && (
+
+                    <Grid
+
+                        size={{
+
+                            xs: 12,
+
+                            sm: 6,
+
+                            lg: 2
+
+                        }}
+
+                    >
+
+                        <FormControl fullWidth>
+
+                            <InputLabel>
+
+                                Category
+
+                            </InputLabel>
+
+                            <Select
+
+                                value={category ?? ""}
+
+                                label="Category"
+
+                                onChange={(e) =>
+
+                                    onCategoryChange?.(
+
+                                        String(e.target.value) || undefined
+
+                                    )
+
+                                }
+
+                                sx={{
+
+                                    height: 52,
+
+                                    borderRadius: 3
+
+                                }}
+
+                            >
+
+                                <MenuItem value="">
+
+                                    All
+
+                                </MenuItem>
+
+                                {/* NOTE: replace with real category list, e.g. mapped from data */}
+
+                                <MenuItem value="electronics">
+
+                                    Electronics
+
+                                </MenuItem>
+
+                                <MenuItem value="apparel">
+
+                                    Apparel
+
+                                </MenuItem>
+
+                                <MenuItem value="home">
+
+                                    Home
+
+                                </MenuItem>
+
+                            </Select>
+
+                        </FormControl>
+
+                    </Grid>
+
+                )}
+
+                {showGrade && (
+
+                    <Grid
+
+                        size={{
+
+                            xs: 12,
+
+                            sm: 6,
+
+                            lg: 2
+
+                        }}
+
+                    >
+
+                        <FormControl fullWidth>
+
+                            <InputLabel>
+
+                                Grade
+
+                            </InputLabel>
+
+                            <Select
+
+                                value={grade ?? ""}
+
+                                label="Grade"
+
+                                onChange={(e) =>
+
+                                    onGradeChange?.(
+
+                                        String(e.target.value) || undefined
+
+                                    )
+
+                                }
+
+                                sx={{
+
+                                    height: 52,
+
+                                    borderRadius: 3
+
+                                }}
+
+                            >
+
+                                <MenuItem value="">
+
+                                    All
+
+                                </MenuItem>
+
+                                <MenuItem value="A">
+
+                                    A
+
+                                </MenuItem>
+
+                                <MenuItem value="B">
+
+                                    B
+
+                                </MenuItem>
+
+                                <MenuItem value="C">
+
+                                    C
+
+                                </MenuItem>
+
+                                <MenuItem value="D">
+
+                                    D
+
+                                </MenuItem>
+
+                            </Select>
+
+                        </FormControl>
+
+                    </Grid>
+
+                )}
+
+                {showMoving && (
+
+                    <Grid
+
+                        size={{
+
+                            xs: 12,
+
+                            sm: 6,
+
+                            lg: 2
+
+                        }}
+
+                    >
+
+                        <FormControl fullWidth>
+
+                            <InputLabel>
+
+                                Moving
+
+                            </InputLabel>
+
+                            <Select
+
+                                value={moving ?? ""}
+
+                                label="Moving"
+
+                                onChange={(e) =>
+
+                                    onMovingChange?.(
+
+                                        String(e.target.value) || undefined
+
+                                    )
+
+                                }
+
+                                sx={{
+
+                                    height: 52,
+
+                                    borderRadius: 3
+
+                                }}
+
+                            >
+
+                                <MenuItem value="">
+
+                                    All
+
+                                </MenuItem>
+
+                                <MenuItem value="fast">
+
+                                    Fast Moving
+
+                                </MenuItem>
+
+                                <MenuItem value="slow">
+
+                                    Slow Moving
+
+                                </MenuItem>
+
+                                <MenuItem value="stagnant">
+
+                                    Stagnant
+
+                                </MenuItem>
+
+                            </Select>
+
+                        </FormControl>
+
+                    </Grid>
+
+                )}
+
+                {showTrend && (
+
+                    <Grid
+
+                        size={{
+
+                            xs: 12,
+
+                            sm: 6,
+
+                            lg: 2
+
+                        }}
+
+                    >
+
+                        <FormControl fullWidth>
+
+                            <InputLabel>
+
+                                Trend
+
+                            </InputLabel>
+
+                            <Select
+
+                                value={trend ?? ""}
+
+                                label="Trend"
+
+                                onChange={(e) =>
+
+                                    onTrendChange?.(
+
+                                        String(e.target.value) || undefined
+
+                                    )
+
+                                }
+
+                                sx={{
+
+                                    height: 52,
+
+                                    borderRadius: 3
+
+                                }}
+
+                            >
+
+                                <MenuItem value="">
+
+                                    All
+
+                                </MenuItem>
+
+                                <MenuItem value="up">
+
+                                    Trending Up
+
+                                </MenuItem>
+
+                                <MenuItem value="down">
+
+                                    Trending Down
+
+                                </MenuItem>
+
+                                <MenuItem value="stable">
+
+                                    Stable
 
                                 </MenuItem>
 

@@ -54,8 +54,9 @@ import RevenueTrendChart from "./components/Admin/BEAnalytics/RevenueTrendChart"
 //AdminAiAnalytics
 
 import BusinessSummaryPage from "./components/Admin/AiAnalytics/pages/BusinessSummaryPage";
-import CustomerAnalyticsPage from "./components/Admin/AiAnalytics/pages/CustomerAnalyticsPage"; 
+import CustomerAnalyticsPage from "./components/Admin/AiAnalytics/pages/CustomerAnalyticsPage";
 import InventoryAnalyticsPage from "./components/Admin/AiAnalytics/pages/InventoryAnalyticsPage";
+import ProductPerformancePage from "./components/Admin/AiAnalytics/pages/ProductPerformancePage";
 
 
 
@@ -134,32 +135,41 @@ export default function App() {
         {/* AI ANALYTICS ROUTE */}
         {/* AI ANALYTICS ROUTE */}
 
-<Route
-    path="/admin/ai-dashboard"
-    element={
-        user?.adminRole
-            ? <BusinessSummaryPage />
-            : <Navigate to="/" replace />
-    }
-/>
+        <Route
+          path="/admin/ai-dashboard"
+          element={
+            user?.adminRole
+              ? <BusinessSummaryPage />
+              : <Navigate to="/" replace />
+          }
+        />
 
-<Route
-    path="/admin/customer-analytics"
-    element={
-        user?.adminRole
-            ? <CustomerAnalyticsPage />
-            : <Navigate to="/" replace />
-    }
-/>
+        <Route
+          path="/admin/customer-analytics"
+          element={
+            user?.adminRole
+              ? <CustomerAnalyticsPage />
+              : <Navigate to="/" replace />
+          }
+        />
 
-<Route
-    path="/admin/inventory-analytics"
-    element={
-        user?.adminRole
-            ? <InventoryAnalyticsPage />
-            : <Navigate to="/" replace />
-    }
-/>
+        <Route
+          path="/admin/inventory-analytics"
+          element={
+            user?.adminRole
+              ? <InventoryAnalyticsPage />
+              : <Navigate to="/" replace />
+          }
+        />
+
+        <Route
+          path="/admin/product-performance"
+          element={
+            user?.adminRole
+              ? <ProductPerformancePage />
+              : <Navigate to="/" replace />
+          }
+        />
 
         {/* FALLBACK */}
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -6,7 +6,7 @@ export async function getBusinessSummary(
 ): Promise<BusinessSummaryResponse> {
 
     const { data } = await aiAxios.get<BusinessSummaryResponse>(
-        "/ai/business-summary",
+        "/business-summary",
         {
             params: {
                 days,
