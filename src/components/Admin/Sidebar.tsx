@@ -16,6 +16,8 @@ export default function Sidebar() {
     { label: "AI BusinessSummary Dashboard", path: "/admin/ai-dashboard" },
     { label: "AI Customer Analytics", path: "/admin/customer-analytics" },
     { label: "AI Inventory Analytics", path: "/admin/inventory-analytics" },
+    { label: "AI Product Performance", path: "/admin/product-performance" },
+    { label: "AI Price Optimization", path: "/admin/price-optimization" },
     { label: "Feedbacks", path: "/admin/feedbacks" }
 
   ];

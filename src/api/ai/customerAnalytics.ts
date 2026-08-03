@@ -41,7 +41,7 @@ export async function getCustomerAnalytics(
 
     const { data } =
         await aiAxios.get<CustomerAnalyticsResponse>(
-            "/ai/customer-analytics",
+            "/customer-analytics",
             {
                 params
             }
@@ -73,7 +73,7 @@ export async function getCustomerSummary(
 
     const { data } =
         await aiAxios.get<CustomerSummaryResponse>(
-            "/ai/customer-analytics/summary",
+            "/customer-analytics/summary",
             {
                 params: {
                     days
@@ -111,7 +111,7 @@ export async function getTopCustomers(
 
     const { data } =
         await aiAxios.get<TopCustomersResponse>(
-            "/ai/customer-analytics/top-customers",
+            "/customer-analytics/top-customers",
             {
                 params: {
 
@@ -147,7 +147,7 @@ export async function getCustomerSegments(
 
     const { data } =
         await aiAxios.get<CustomerSegmentsResponse>(
-            "/ai/customer-analytics/segments",
+            "/customer-analytics/segments",
             {
                 params: {
                     days
@@ -183,7 +183,7 @@ export async function getCustomerDetails(
 
     const { data } =
         await aiAxios.get<CustomerDetailsResponse>(
-            `/ai/customer-analytics/customer/${customerId}`,
+            `/customer-analytics/customer/${customerId}`,
             {
                 params: {
 

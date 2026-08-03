@@ -14,7 +14,7 @@ export async function getInventoryAnalytics() {
 
     const { data } =
         await aiAxios.get<InventoryAnalyticsResponse>(
-            "/ai/inventory-analytics"
+            "/inventory-analytics"
         );
 
     return data;
@@ -29,7 +29,7 @@ export async function getInventorySummary() {
 
     const { data } =
         await aiAxios.get<InventorySummaryResponse>(
-            "/ai/inventory-analytics/summary"
+            "/inventory-analytics/summary"
         );
 
     return data;
@@ -44,7 +44,7 @@ export async function getLowStockProducts() {
 
     const { data } =
         await aiAxios.get<InventoryListResponse>(
-            "/ai/inventory-analytics/low-stock"
+            "/inventory-analytics/low-stock"
         );
 
     return data;
@@ -59,7 +59,7 @@ export async function getCriticalStockProducts() {
 
     const { data } =
         await aiAxios.get<InventoryListResponse>(
-            "/ai/inventory-analytics/critical-stock"
+            "/inventory-analytics/critical-stock"
         );
 
     return data;
@@ -74,7 +74,7 @@ export async function getOutOfStockProducts() {
 
     const { data } =
         await aiAxios.get<InventoryListResponse>(
-            "/ai/inventory-analytics/out-of-stock"
+            "/inventory-analytics/out-of-stock"
         );
 
     return data;
@@ -89,7 +89,7 @@ export async function getHealthyStockProducts() {
 
     const { data } =
         await aiAxios.get<InventoryListResponse>(
-            "/ai/inventory-analytics/healthy"
+            "/inventory-analytics/healthy"
         );
 
     return data;
@@ -104,7 +104,7 @@ export async function getOverStockProducts() {
 
     const { data } =
         await aiAxios.get<InventoryListResponse>(
-            "/ai/inventory-analytics/overstock"
+            "/inventory-analytics/overstock"
         );
 
     return data;
@@ -119,7 +119,7 @@ export async function getStockAging() {
 
     const { data } =
         await aiAxios.get<InventoryListResponse>(
-            "/ai/inventory-analytics/aging"
+            "/inventory-analytics/aging"
         );
 
     return data;
@@ -134,7 +134,7 @@ export async function getInventoryRecommendations() {
 
     const { data } =
         await aiAxios.get<InventoryListResponse>(
-            "/ai/inventory-analytics/recommendations"
+            "/inventory-analytics/recommendations"
         );
 
     return data;
