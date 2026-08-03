@@ -101,10 +101,8 @@ export default function useProductPerformance() {
     );
 
     useEffect(() => {
-
-        refresh();
-
-    }, []);
+    refresh();
+}, [refresh]);
 
     return {
 
