@@ -18,6 +18,7 @@ export default function Sidebar() {
     { label: "AI Inventory Analytics", path: "/admin/inventory-analytics" },
     { label: "AI Product Performance", path: "/admin/product-performance" },
     { label: "AI Price Optimization", path: "/admin/price-optimization" },
+    { label: "AI Reorder Analytics", path: "/admin/reorder-analytics" },
     { label: "Feedbacks", path: "/admin/feedbacks" }
 
   ];

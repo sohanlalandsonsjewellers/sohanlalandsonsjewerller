@@ -58,6 +58,7 @@ import CustomerAnalyticsPage from "./components/Admin/AiAnalytics/pages/Customer
 import InventoryAnalyticsPage from "./components/Admin/AiAnalytics/pages/InventoryAnalyticsPage";
 import ProductPerformancePage from "./components/Admin/AiAnalytics/pages/ProductPerformancePage";
 import PriceOptimizationPage from "./components/Admin/AiAnalytics/pages/PriceOptimizationPage";
+import ReorderAnalyticsPage from "./components/Admin/AiAnalytics/pages/ReorderAnalyticsPage";
 
 
 
@@ -177,6 +178,15 @@ export default function App() {
           element={
             user?.adminRole
               ? <PriceOptimizationPage />
+              : <Navigate to="/" replace />
+          }
+        />
+
+        <Route
+          path="/admin/reorder-analytics"
+          element={
+            user?.adminRole
+              ? <ReorderAnalyticsPage />
               : <Navigate to="/" replace />
           }
         />
