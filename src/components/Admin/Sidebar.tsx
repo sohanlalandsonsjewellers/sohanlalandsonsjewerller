@@ -20,6 +20,7 @@ export default function Sidebar() {
     { label: "AI Price Optimization", path: "/admin/price-optimization" },
     { label: "AI Reorder Analytics", path: "/admin/reorder-analytics" },
     { label: "AI Sales Forecast", path: "/admin/sales-forecast" },
+    { label: "AI Demand Forecast", path: "/admin/demand-forecast" },
     { label: "Feedbacks", path: "/admin/feedbacks" }
 
   ];
