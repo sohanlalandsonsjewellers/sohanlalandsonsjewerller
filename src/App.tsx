@@ -61,6 +61,7 @@ import PriceOptimizationPage from "./components/Admin/AiAnalytics/pages/PriceOpt
 import ReorderAnalyticsPage from "./components/Admin/AiAnalytics/pages/ReorderAnalyticsPage";
 import SalesForecastPage from "./components/Admin/AiAnalytics/pages/SalesForecastPage";
 import DemandForecastPage from "./components/Admin/AiAnalytics/pages/DemandForecastPage";
+import ExecutiveDashboardPage from "./components/Admin/AiAnalytics/pages/ExecutiveDashboardPage";
 
 
 
@@ -209,7 +210,16 @@ export default function App() {
               ? <DemandForecastPage />
               : <Navigate to="/" replace />
           }
-        />  
+        />
+
+        <Route
+          path="/admin/executive-dashboard"
+          element={
+            user?.adminRole
+              ? <ExecutiveDashboardPage />
+              : <Navigate to="/" replace />
+          }
+        />
 
         {/* FALLBACK */}
         <Route path="*" element={<Navigate to="/" replace />} />

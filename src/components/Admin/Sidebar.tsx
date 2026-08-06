@@ -21,6 +21,7 @@ export default function Sidebar() {
     { label: "AI Reorder Analytics", path: "/admin/reorder-analytics" },
     { label: "AI Sales Forecast", path: "/admin/sales-forecast" },
     { label: "AI Demand Forecast", path: "/admin/demand-forecast" },
+    { label: "AI Executive Dashboard", path: "/admin/executive-dashboard" },
     { label: "Feedbacks", path: "/admin/feedbacks" }
 
   ];
