@@ -45,3 +45,9 @@ export async function logout() {
   const res = await api.post('/auth/logout');
   return res.data;
 }
+
+// Logout From All Devices API
+export async function logoutAll() {
+  const res = await api.post('/auth/logout-all');
+  return res.data;
+}

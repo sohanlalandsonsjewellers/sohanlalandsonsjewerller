@@ -67,13 +67,14 @@ export default function App() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <p>Loading...</p>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#FDFBF7' }}>
+        <p style={{ fontFamily: 'Playfair Display, serif', color: '#4A0E17', fontSize: '1.2rem' }}>Loading Sohan Lal & Sons...</p>
       </div>
     );
   }
 
   const isAuthenticated = !!user;
+  const isAdmin = user?.adminRole === true;
 
   return (
     <>
@@ -82,47 +83,48 @@ export default function App() {
       <ToastContainer position="top-right" autoClose={3000} style={{ top: '50%', transform: 'translateY(-50%)' }} />
 
       <Routes>
-        {/* PUBLIC ROUTES */}
-        <Route path="/login" element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />} />
-        <Route path="/register" element={isAuthenticated ? <Navigate to="/" replace /> : <RegisterPage />} />
+        {/* ROOT ROUTE: ADMIN KO DASHBOARD, CUSTOMERS KO USERHOME */}
+        <Route path="/" element={isAdmin ? <Navigate to="/admin/users" replace /> : <UserHome />} />
+        <Route path="/user" element={<UserHome />} />
 
-        {/* ROOT REDIRECTOR */}
-        <Route path="/" element={
-          !isAuthenticated ? (
-            <UserHome />
-          ) : (
-            user?.adminRole ? <Navigate to="/admin/users" replace /> : <UserHome />
-          )
+        {/* AUTH ROUTES */}
+        <Route path="/login" element={
+          isAuthenticated 
+            ? (isAdmin ? <Navigate to="/admin/users" replace /> : <Navigate to="/" replace />) 
+            : <LoginPage />
+        } />
+        <Route path="/register" element={
+          isAuthenticated 
+            ? (isAdmin ? <Navigate to="/admin/users" replace /> : <Navigate to="/" replace />) 
+            : <RegisterPage />
         } />
 
-        {/* USER ROUTES */}
-        <Route path="/user" element={<UserHome />} />
+        {/* PUBLIC USER ROUTES */}
         <Route path="/wishlist" element={<WishlistPage />} />
         <Route path="/collection/:name" element={<CollectionLanding />} />
         <Route path="/product/:id" element={<ProductDetails />} />
 
         {/* ADMIN ROUTES */}
-        <Route path="/admin/users" element={user?.adminRole ? <UserList /> : <Navigate to="/" replace />} />
-        <Route path="/admin/users/create" element={user?.adminRole ? <UserCreate /> : <Navigate to="/" replace />} />
-        <Route path="/admin/users/edit/:id" element={user?.adminRole ? <UserEdit /> : <Navigate to="/" replace />} />
+        <Route path="/admin/users" element={isAdmin ? <UserList /> : <Navigate to="/" replace />} />
+        <Route path="/admin/users/create" element={isAdmin ? <UserCreate /> : <Navigate to="/" replace />} />
+        <Route path="/admin/users/edit/:id" element={isAdmin ? <UserEdit /> : <Navigate to="/" replace />} />
 
-        <Route path="/admin/products" element={user?.adminRole ? <ProductList /> : <Navigate to="/" replace />} />
-        <Route path="/admin/products/create" element={user?.adminRole ? <ProductCreate /> : <Navigate to="/" replace />} />
-        <Route path="/admin/products/edit/:id" element={user?.adminRole ? <ProductEdit /> : <Navigate to="/" replace />} />
+        <Route path="/admin/products" element={isAdmin ? <ProductList /> : <Navigate to="/" replace />} />
+        <Route path="/admin/products/create" element={isAdmin ? <ProductCreate /> : <Navigate to="/" replace />} />
+        <Route path="/admin/products/edit/:id" element={isAdmin ? <ProductEdit /> : <Navigate to="/" replace />} />
 
-        <Route path="/admin/bills" element={user?.adminRole ? <BillList /> : <Navigate to="/" replace />} />
-        <Route path="/admin/bills/create" element={user?.adminRole ? <BillCreate /> : <Navigate to="/" replace />} />
-        <Route path="/admin/bills/edit/:id" element={user?.adminRole ? <BillEdit /> : <Navigate to="/" replace />} />
-        <Route path="/admin/bills/view/:id" element={user?.adminRole ? <BillView /> : <Navigate to="/" replace />} />
-        <Route path="/admin/orders" element={user?.adminRole ? <OrderList /> : <Navigate to="/" replace />} />
+        <Route path="/admin/bills" element={isAdmin ? <BillList /> : <Navigate to="/" replace />} />
+        <Route path="/admin/bills/create" element={isAdmin ? <BillCreate /> : <Navigate to="/" replace />} />
+        <Route path="/admin/bills/edit/:id" element={isAdmin ? <BillEdit /> : <Navigate to="/" replace />} />
+        <Route path="/admin/bills/view/:id" element={isAdmin ? <BillView /> : <Navigate to="/" replace />} />
+        <Route path="/admin/orders" element={isAdmin ? <OrderList /> : <Navigate to="/" replace />} />
+        <Route path="/admin/feedbacks" element={isAdmin ? <FeedbackList /> : <Navigate to="/" replace />} />
 
         {/* PROTECTED USER ROUTES */}
         <Route path="/profile" element={<ProtectedRoute><MyProfile /></ProtectedRoute>} />
         <Route path="/my-orders" element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
         <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
         <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
-
-        <Route path="/admin/feedbacks" element={user?.adminRole ? <FeedbackList /> : <Navigate to="/" replace />} />
 
         {/* POLICY ROUTES — Public */}
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
@@ -132,20 +134,20 @@ export default function App() {
         <Route path="/faqs" element={<FAQs />} />
 
         {/* ANALYTICS ROUTE */}
-        <Route path="/admin/analytics" element={user?.adminRole ? <AdminAnalytics /> : <Navigate to="/" replace />} />
-        <Route path="/admin/business" element={user?.adminRole ? <BusinessDashboard /> : <Navigate to="/" replace />} />
-        <Route path="/admin/revenue-trend" element={user?.adminRole ? <RevenueTrendChart /> : <Navigate to="/" replace />} />
+        <Route path="/admin/analytics" element={isAdmin ? <AdminAnalytics /> : <Navigate to="/" replace />} />
+        <Route path="/admin/business" element={isAdmin ? <BusinessDashboard /> : <Navigate to="/" replace />} />
+        <Route path="/admin/revenue-trend" element={isAdmin ? <RevenueTrendChart /> : <Navigate to="/" replace />} />
 
         {/* AI ANALYTICS ROUTE */}
-        <Route path="/admin/ai-dashboard" element={user?.adminRole ? <BusinessSummaryPage /> : <Navigate to="/" replace />} />
-        <Route path="/admin/customer-analytics" element={user?.adminRole ? <CustomerAnalyticsPage /> : <Navigate to="/" replace />} />
-        <Route path="/admin/inventory-analytics" element={user?.adminRole ? <InventoryAnalyticsPage /> : <Navigate to="/" replace />} />
-        <Route path="/admin/product-performance" element={user?.adminRole ? <ProductPerformancePage /> : <Navigate to="/" replace />} />
-        <Route path="/admin/price-optimization" element={user?.adminRole ? <PriceOptimizationPage /> : <Navigate to="/" replace />} />
-        <Route path="/admin/reorder-analytics" element={user?.adminRole ? <ReorderAnalyticsPage /> : <Navigate to="/" replace />} />
-        <Route path="/admin/sales-forecast" element={user?.adminRole ? <SalesForecastPage /> : <Navigate to="/" replace />} />
-        <Route path="/admin/demand-forecast" element={user?.adminRole ? <DemandForecastPage /> : <Navigate to="/" replace />} />
-        <Route path="/admin/executive-dashboard" element={user?.adminRole ? <ExecutiveDashboardPage /> : <Navigate to="/" replace />} />
+        <Route path="/admin/ai-dashboard" element={isAdmin ? <BusinessSummaryPage /> : <Navigate to="/" replace />} />
+        <Route path="/admin/customer-analytics" element={isAdmin ? <CustomerAnalyticsPage /> : <Navigate to="/" replace />} />
+        <Route path="/admin/inventory-analytics" element={isAdmin ? <InventoryAnalyticsPage /> : <Navigate to="/" replace />} />
+        <Route path="/admin/product-performance" element={isAdmin ? <ProductPerformancePage /> : <Navigate to="/" replace />} />
+        <Route path="/admin/price-optimization" element={isAdmin ? <PriceOptimizationPage /> : <Navigate to="/" replace />} />
+        <Route path="/admin/reorder-analytics" element={isAdmin ? <ReorderAnalyticsPage /> : <Navigate to="/" replace />} />
+        <Route path="/admin/sales-forecast" element={isAdmin ? <SalesForecastPage /> : <Navigate to="/" replace />} />
+        <Route path="/admin/demand-forecast" element={isAdmin ? <DemandForecastPage /> : <Navigate to="/" replace />} />
+        <Route path="/admin/executive-dashboard" element={isAdmin ? <ExecutiveDashboardPage /> : <Navigate to="/" replace />} />
 
         {/* FALLBACK */}
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -6,7 +6,7 @@ type LoginArgs = { email: string; password: string };
 
 type AuthContextType = {
   user: User | null;
-  token: string | null; // Compatibility field
+  token: string | null;
   loading: boolean;
   login: (payload: LoginArgs) => Promise<User>;
   register: (payload: any) => Promise<any>;
@@ -20,7 +20,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // App init par user profile check karna
   const checkAuth = async () => {
     try {
       const data = await authApi.getMe();
@@ -46,7 +45,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw new Error(response?.message || "Login failed");
     }
     setUser(response.user);
-    // Cleanup legacy localStorage token if present
     localStorage.removeItem("sls_token"); 
     return response.user;
   }
@@ -67,7 +65,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }
 
-  // Token computed strictly based on whether user is present
   const token = user ? "active_session" : null;
 
   return (

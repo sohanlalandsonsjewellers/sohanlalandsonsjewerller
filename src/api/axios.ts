@@ -29,7 +29,10 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Check if error is 401 (Unauthorized) and request hasn't been retried yet
+    // /auth/me runs silently on every page load to check "am I logged in?"
+    // A 401 here is normal for a guest — it should never force a redirect.
+    const isSilentAuthCheck = originalRequest?.url?.includes("/auth/me");
+
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
@@ -37,7 +40,6 @@ axiosInstance.interceptors.response.use(
       !originalRequest.url?.includes("/auth/refresh")
     ) {
       if (isRefreshing) {
-        // Queue parallel failed requests while refresh is in progress
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
@@ -51,20 +53,24 @@ axiosInstance.interceptors.response.use(
       try {
         // Call refresh token endpoint (cookie will be sent automatically)
         await axiosInstance.post("/auth/refresh");
-
         processQueue();
         isRefreshing = false;
-
-        // Retry the original request
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError);
         isRefreshing = false;
 
-        // If refresh fails (session expired), redirect to login
-        if (typeof window !== "undefined" && window.location.pathname !== "/login") {
+        // Only force-redirect for a real protected action failing.
+        // Never redirect for the silent auth check — that would kick
+        // every logged-out visitor off the public homepage.
+        if (
+          !isSilentAuthCheck &&
+          typeof window !== "undefined" &&
+          window.location.pathname !== "/login"
+        ) {
           window.location.href = "/login";
         }
+
         return Promise.reject(refreshError);
       }
     }
