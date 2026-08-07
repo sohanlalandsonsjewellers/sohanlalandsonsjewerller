@@ -44,8 +44,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!response?.success || !response?.user) {
       throw new Error(response?.message || "Login failed");
     }
+
     setUser(response.user);
-    localStorage.removeItem("sls_token"); 
+
+    // 🚀 CRUCIAL FIX: Token ko localstorage me SAVE karna hai, Remove nahi!
+    if (response.token) {
+      localStorage.setItem("sls_token", response.token);
+    }
+
     return response.user;
   }
 
@@ -65,7 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }
 
-  const token = user ? "active_session" : null;
+  const token = localStorage.getItem("sls_token") || (user ? "active_session" : null);
 
   return (
     <AuthContext.Provider value={{ user, token, loading, login, register, logout, checkAuth }}>

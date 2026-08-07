@@ -2,10 +2,9 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
   baseURL: process.env.REACT_APP_API_BASE_URL,
-  withCredentials: true, // Sends HttpOnly cookies with every request
+  withCredentials: true,
 });
 
-// Request Interceptor: Attach Bearer Token from LocalStorage if available (Fallback)
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("sls_token");
@@ -71,6 +70,7 @@ axiosInstance.interceptors.response.use(
           typeof window !== "undefined" &&
           window.location.pathname !== "/login"
         ) {
+          localStorage.removeItem("sls_token");
           window.location.href = "/login";
         }
 

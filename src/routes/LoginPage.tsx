@@ -10,23 +10,20 @@ export default function LoginPage() {
 
   const { login } = useAuth();
   const navigate = useNavigate();
-  // const location = useLocation();
-
-  // const from = location.state?.from || "/user";
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setError(null);
     try {
       const loggedInUser = await login({ email, password });
 
-      // Yahan fix karo:
-      if (loggedInUser.adminRole) {
+      if (loggedInUser?.adminRole) {
         navigate("/admin/users", { replace: true });
       } else {
         navigate("/", { replace: true });
       }
     } catch (err: any) {
-      setError("Login failed");
+      setError(err?.message || "Login failed");
     }
   }
 
@@ -37,7 +34,7 @@ export default function LoginPage() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        bgcolor: "#FDFBF7", // 🚀 FIXED: Premium Soft Off-White Showroom Canvas Background
+        bgcolor: "#FDFBF7",
         py: { xs: 4, md: 6 },
         px: 2
       }}
@@ -46,10 +43,10 @@ export default function LoginPage() {
         maxWidth="xs"
         sx={{
           p: { xs: 3, md: 5 },
-          bgcolor: "#FFFFFF", // 🚀 FIXED: Pure White Card
-          border: "1px solid rgba(229, 213, 188, 0.6)", // Luxury Gold Accents Lines
-          borderRadius: 0, // Sharp geometric square corners
-          boxShadow: "0px 12px 40px rgba(74, 14, 23, 0.03)" // Elite faint shadow matrix
+          bgcolor: "#FFFFFF",
+          border: "1px solid rgba(229, 213, 188, 0.6)",
+          borderRadius: 0,
+          boxShadow: "0px 12px 40px rgba(74, 14, 23, 0.03)"
         }}
       >
         <Typography
@@ -92,14 +89,12 @@ export default function LoginPage() {
               "& fieldset": { borderColor: "rgba(229, 213, 188, 0.5)" },
               "&:hover fieldset": { borderColor: "#6E6557" },
               "&.Mui-focused fieldset": { borderColor: "#4A0E17" },
-
-              // 🚀 🔥 ANTI-AUTOFILL ENGINE OVERRIDE: Kills browser background color distortion leaks completely!
               "& input": {
                 color: "#1A1A1A !important",
                 WebkitTextFillColor: "#1A1A1A !important",
                 "&:-webkit-autofill": {
-                  WebkitBoxShadow: "0 0 0 100px #FAF8F5 inset !important", // Locks inside container background to ivory cream
-                  WebkitTextFillColor: "#1A1A1A !important", // Charcoal dark input values text
+                  WebkitBoxShadow: "0 0 0 100px #FAF8F5 inset !important",
+                  WebkitTextFillColor: "#1A1A1A !important",
                   transition: "background-color 5000s ease-in-out 0s"
                 }
               }
@@ -137,7 +132,7 @@ export default function LoginPage() {
             fullWidth
             variant="contained"
             sx={{
-              backgroundColor: "#4A0E17", // Royal Showroom deep maroon button tone
+              backgroundColor: "#4A0E17",
               color: "#FDFBF7",
               fontWeight: 600,
               fontSize: "0.9rem",
