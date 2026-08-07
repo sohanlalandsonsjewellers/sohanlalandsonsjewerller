@@ -28,14 +28,10 @@ export default function UserList() {
     }
   }
 
-  // ---------------------------
-  // 🔍 SEARCH FILTER LOGIC MATRIX
-  // ---------------------------
   const filtered = users.filter((u) => {
     const term = search.toLowerCase().trim();
     if (!term) return true;
 
-    // Convert adminRole to many readable versions for seamless string lookup matchings
     const roleText = u.adminRole ? "yes admin true" : "no user false";
 
     return (
@@ -48,23 +44,17 @@ export default function UserList() {
 
   return (
     <AdminLayout title="Admin – All Users List">
-
-      {/* =======================================================================
-          🔥 FIXED: ACTION BAR CONTAINER (NO MORE BORDER COLLISION/TOUCHES IN SPLIT MODE)
-          ======================================================================= */}
-      <Box 
-        sx={{ 
-          display: "flex", 
-          flexDirection: { xs: "column", sm: "row" }, 
-          justifyContent: "space-between", 
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          justify: "space-between",
           alignItems: { xs: "stretch", sm: "center" },
-          mb: 4, 
-          gap: 2, // 🚀 Fixed: Splitscreen par borders ko aapas mein chipkne se rokega
-          flexWrap: "wrap"
+          mb: 4,
+          gap: 2,
+          flexWrap: "wrap",
         }}
       >
-        
-        {/* 🔍 HIGH VISIBILITY REFINERY INPUT BAR */}
         <TextField
           label="Search by Name, Email, Phone..."
           size="small"
@@ -77,30 +67,26 @@ export default function UserList() {
               </InputAdornment>
             ),
           }}
-          sx={{ 
+          sx={{
             width: { xs: "100%", sm: "350px" },
-            bgcolor: "#FFFFFF", 
-            borderRadius: 0,    
-
-            // 1. Input Typing Field and Label Contrast Custom Corrections
+            bgcolor: "#FFFFFF",
+            borderRadius: 0,
             "& .MuiInputBase-input": {
-              color: "#4A0E17 !important", // Type kiya hua text hamesha deep burgundy dikhega
+              color: "#4A0E17 !important",
               fontWeight: 600,
               fontSize: "0.85rem",
             },
             "& .MuiInputLabel-root": {
-              color: "#757575 !important", // Field definition string label tracking color
+              color: "#757575 !important",
               fontSize: "0.85rem",
             },
             "& .MuiInputLabel-root.Mui-focused": {
-              color: "#4A0E17 !important", 
+              color: "#4A0E17 !important",
             },
-
-            // 2. Uniform Dynamic Layout Visible Borders
             "& .MuiOutlinedInput-root": {
               borderRadius: 0,
               "& fieldset": {
-                borderColor: "#A0A0A0 !important", // Fixed: Click se pehle hi crisp grey line saaf dikhegi
+                borderColor: "#A0A0A0 !important",
                 borderWidth: "1px !important",
               },
               "&:hover fieldset": {
@@ -114,7 +100,6 @@ export default function UserList() {
           }}
         />
 
-        {/* ➕ LUXURY ACCENTUATED ENTRY TRIGGER BUTTON */}
         <Button
           variant="contained"
           onClick={() => navigate("/admin/users/create")}
@@ -131,24 +116,21 @@ export default function UserList() {
             "&:hover": {
               bgcolor: "#2A050B !important",
               color: "#FFFFFF !important",
-            }
+            },
           }}
         >
           + Add User
         </Button>
       </Box>
 
-      {/* =======================================================================
-          🚀 FIXED: CALCULATOR FLEX WRAP FRAMEWORK (STOPS TOTAL SCREEN SCROLL OVERFLOWS)
-          ======================================================================= */}
       <Box
         sx={{
           width: "100%",
           maxWidth: {
             xs: "100%",
-            md: "calc(100vw - 280px)" // 🚀 Fixed: Sidebar offsets matrix ko dynamically screen se block out kar dega
+            md: "calc(100vw - 280px)",
           },
-          boxSizing: "border-box"
+          boxSizing: "border-box",
         }}
       >
         <UserTable
@@ -158,14 +140,12 @@ export default function UserList() {
         />
       </Box>
 
-      {/* ---------- DELETE DIALOG ---------- */}
       <UserDeleteDialog
         open={Boolean(deleteId)}
         userId={deleteId}
         onClose={() => setDeleteId(null)}
         onDeleted={loadUsers}
       />
-
     </AdminLayout>
   );
 }

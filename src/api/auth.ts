@@ -4,8 +4,8 @@ export interface RegisterPayload {
   name: string;
   email: string;
   password: string;
-  phoneNumber: string; // Made strictly matching database type constraints
-  address?: string;    // 🚀 INJECTED ALL EXTENDED PROPERTIES SAFELY
+  phoneNumber: string;
+  address?: string;
   pincode?: string;
   alternatePhone?: string;
   adminRole?: boolean; 
@@ -25,6 +25,29 @@ export async function register(payload: RegisterPayload) {
 // Login API
 export async function login(payload: LoginPayload) {
   const res = await api.post('/auth/login', payload);
-  return res.data; // expected: { token: "..." } or just token
+  return res.data;
 }
 
+// Get Logged In User Profile
+export async function getMe() {
+  const res = await api.get('/auth/me');
+  return res.data;
+}
+
+// Refresh Token API
+export async function refreshToken() {
+  const res = await api.post('/auth/refresh');
+  return res.data;
+}
+
+// Logout API
+export async function logout() {
+  const res = await api.post('/auth/logout');
+  return res.data;
+}
+
+// Logout From All Devices API
+export async function logoutAll() {
+  const res = await api.post('/auth/logout-all');
+  return res.data;
+}

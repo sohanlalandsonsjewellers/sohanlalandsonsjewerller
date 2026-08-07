@@ -5,11 +5,9 @@ export const getAllOrders = async () => {
   return { orders: res.data.orders || [] };
 };
 
-export const placeOrder = async (orderData: any, token: string) => {
-  // ✅ FIX: URL se '/api' hata diya
-  const res = await axiosInstance.post('/order/place', orderData, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
+export const placeOrder = async (orderData: any) => {
+  // ✅ FIX: Custom Authorization header hata diya (Cookie automatically chali jayegi)
+  const res = await axiosInstance.post('/order/place', orderData);
   return res.data;
 };
 
@@ -29,7 +27,6 @@ export const deleteOrder = async (id: string) => {
 };
 
 export async function getMyNotifications() {
-  // ✅ Tumhare Router path aur prefix ke hisaab se sahi path:
   const res = await axiosInstance.get('/order/notifications/my');
   return res.data;
 }

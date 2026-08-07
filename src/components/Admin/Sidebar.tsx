@@ -18,6 +18,10 @@ export default function Sidebar() {
     { label: "AI Inventory Analytics", path: "/admin/inventory-analytics" },
     { label: "AI Product Performance", path: "/admin/product-performance" },
     { label: "AI Price Optimization", path: "/admin/price-optimization" },
+    { label: "AI Reorder Analytics", path: "/admin/reorder-analytics" },
+    { label: "AI Sales Forecast", path: "/admin/sales-forecast" },
+    { label: "AI Demand Forecast", path: "/admin/demand-forecast" },
+    { label: "AI Executive Dashboard", path: "/admin/executive-dashboard" },
     { label: "Feedbacks", path: "/admin/feedbacks" }
 
   ];
