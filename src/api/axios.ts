@@ -5,7 +5,18 @@ const axiosInstance = axios.create({
   withCredentials: true, // Sends HttpOnly cookies with every request
 });
 
-// Flag to prevent infinite retry loops on refresh
+// Request Interceptor: Attach Bearer Token from LocalStorage if available (Fallback)
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("sls_token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 let isRefreshing = false;
 let failedQueue: Array<{
   resolve: (value?: unknown) => void;
@@ -23,14 +34,10 @@ const processQueue = (error: any = null) => {
   failedQueue = [];
 };
 
-// Response Interceptor for Silent Refresh
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-
-    // /auth/me runs silently on every page load to check "am I logged in?"
-    // A 401 here is normal for a guest — it should never force a redirect.
     const isSilentAuthCheck = originalRequest?.url?.includes("/auth/me");
 
     if (
@@ -51,7 +58,6 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        // Call refresh token endpoint (cookie will be sent automatically)
         await axiosInstance.post("/auth/refresh");
         processQueue();
         isRefreshing = false;
@@ -60,9 +66,6 @@ axiosInstance.interceptors.response.use(
         processQueue(refreshError);
         isRefreshing = false;
 
-        // Only force-redirect for a real protected action failing.
-        // Never redirect for the silent auth check — that would kick
-        // every logged-out visitor off the public homepage.
         if (
           !isSilentAuthCheck &&
           typeof window !== "undefined" &&
