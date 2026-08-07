@@ -4,84 +4,58 @@ import { ArrowBackIos, WhatsApp, VerifiedUser, LocalShippingOutlined, PaymentsOu
 import { useCart } from "../../../contexts/CartProvider";
 import { useAuth } from "../../../contexts/AuthProvider";
 import { useNavigate } from "react-router-dom";
-import { placeOrder } from "../../../api/orderService";
+import { placeOrder } from "../../../api/orderApi";
 import { getShippingRate } from "../../../api/shippingService";
 import { trackEvent } from "../../../api/analytics";
 
 export default function CheckoutPage() {
-
   const { items: contextItems, total: contextTotal, clear } = useCart();
-
-  const { user, token } = useAuth() as any;
-
+  const { user } = useAuth() as any;
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
 
   const getCartData = () => {
-
     if (contextItems.length > 0)
       return {
         items: contextItems,
         total: contextTotal
       };
 
-    const cart =
-      JSON.parse(
-        localStorage.getItem("sl_cart") || "[]"
-      );
+    const cart = JSON.parse(
+      localStorage.getItem("sl_cart") || "[]"
+    );
 
-    const total =
-      cart.reduce(
-        (sum: number, item: any) =>
-          sum +
-          item.price *
-          item.qty,
-        0
-      );
+    const total = cart.reduce(
+      (sum: number, item: any) => sum + item.price * item.qty,
+      0
+    );
 
     return {
       items: cart,
       total
     };
-
   };
 
-  const { items, total } =
-    getCartData();
+  const { items, total } = getCartData();
 
-  /*
-  same calculation
-  bill / whatsapp / checkout
-  */
-
-  const subtotal =
-    Number(total || 0);
-
-  const gst =
-    Number(
-      subtotal * 0.03
-    );
+  const subtotal = Number(total || 0);
+  const gst = Number(subtotal * 0.03);
 
   const [shipping, setShipping] = useState(0);
   const [courier, setCourier] = useState<any>(null);
   const [shippingLoading, setShippingLoading] = useState(true);
 
-  const finalTotal =
-    subtotal +
-    gst +
-    Number(shipping);
+  const finalTotal = subtotal + gst + Number(shipping);
 
   useEffect(() => {
-
     if (!user?.pincode || items.length === 0) {
+      setShippingLoading(false);
       return;
     }
 
     const fetchShipping = async () => {
-
       try {
-
         setShippingLoading(true);
 
         let totalWeight = 0;
@@ -90,332 +64,144 @@ export default function CheckoutPage() {
         let maxHeight = 10;
 
         items.forEach((item: any) => {
-
           totalWeight += Number(item.weight || 200) * Number(item.qty);
 
-          maxLength = Math.max(
-            maxLength,
-            Number(item.length || 10)
-          );
-
-          maxBreadth = Math.max(
-            maxBreadth,
-            Number(item.breadth || 10)
-          );
-
-          maxHeight = Math.max(
-            maxHeight,
-            Number(item.height || 10)
-          );
-
+          maxLength = Math.max(maxLength, Number(item.length || 10));
+          maxBreadth = Math.max(maxBreadth, Number(item.breadth || 10));
+          maxHeight = Math.max(maxHeight, Number(item.height || 10));
         });
 
         const res = await getShippingRate({
-
           destination: user.pincode,
-
           payment_type: "prepaid",
-
           order_amount: subtotal,
-
           weight: totalWeight,
-
           length: maxLength,
-
           breadth: maxBreadth,
-
           height: maxHeight
-
         });
 
-        setShipping(
-
-          Number(
-            res.lowestCourier.total_charges
-          )
-
-        );
-
-        setCourier(
-          res.lowestCourier
-        );
-
-      }
-
-      catch (err) {
-
+        setShipping(Number(res.lowestCourier.total_charges));
+        setCourier(res.lowestCourier);
+      } catch (err) {
         console.error(err);
-
         alert("Unable to calculate shipping.");
-
         setShipping(0);
-
-      }
-
-      finally {
-
+      } finally {
         setShippingLoading(false);
-
       }
-
     };
 
     fetchShipping();
-
   }, [user?.pincode, subtotal, items]);
 
   const handlePlaceOrder = async () => {
-
-    if (!token) {
-
-      alert(
-        "Session expired! Please login again."
-      );
-
+    if (!user) {
+      alert("Session expired! Please login again.");
       navigate("/login");
-
       return;
-
     }
 
     if (items.length === 0) {
-
-      alert(
-        "Your cart is empty!"
-      );
-
+      alert("Your cart is empty!");
       return;
-
     }
 
     setLoading(true);
 
     try {
-
       const orderData = {
-
         items,
-
         adminPrice: total,
-
         discount: 0,
-
-        customerName:
-          user?.name ||
-          "Guest",
-
-        customerPhone:
-          user?.phoneNumber ||
-          "0000000000",
-
-        address:
-          user?.address ||
-          "Not provided",
-
-        pincode:
-          user?.pincode ||
-          "N/A",
-
+        customerName: user?.name || "Guest",
+        customerPhone: user?.phoneNumber || "0000000000",
+        address: user?.address || "Not provided",
+        pincode: user?.pincode || "N/A",
         shippingCharge: shipping,
-
         courierId: courier?.id,
-
         courierName: courier?.name
-
       };
 
-      const res =
-        await placeOrder(
-          orderData,
-          token
-        );
+      // ✅ FIX: Token argument removed (Cookie handled automatically by axios)
+      const res = await placeOrder(orderData);
 
-      const order =
-        res.order;
+      const order = res.order;
       Promise.all(
-
         order.items.map((item: any) =>
-
           trackEvent({
-
             eventType: "ORDER_CREATED",
-
             productId: item.productId || item.id,
-
             orderId: order.id,
-
             page: window.location.pathname,
-
             metadata: {
-
               orderNumber: order.id,
-
               productName: item.name,
-
               sku: item.sku,
-
               quantity: item.qty,
-
               price: item.price,
-
               totalItems: order.items.length,
-
               subtotal: order.adminPrice,
-
               gst: order.gstAmount,
-
               shipping: order.shippingCharge,
-
               discount: order.discount,
-
               finalAmount:
                 Number(order.adminPrice) +
                 Number(order.gstAmount) +
                 Number(order.shippingCharge) -
                 Number(order.discount),
-
               paymentMethod: "WHATSAPP",
-
               courier: order.courierName
-
             }
-
           })
-
         )
-
       ).catch((err) => {
-
         console.error("Order Analytics Error:", err);
-
       });
 
-
-      const itemsList =
-        order.items.map(
+      const itemsList = order.items
+        .map(
           (it: any) =>
-
             `* ${it.name} (SKU: ${it.sku}) | Qty: ${it.qty} | Price: ₹${it.price}`
-
-        ).join("\n");
+        )
+        .join("\n");
 
       const finalNet =
-
-        Number(order.adminPrice)
-
-        +
-
-        Number(order.gstAmount)
-
-        +
-
-        Number(order.shippingCharge)
-
-        -
-
+        Number(order.adminPrice) +
+        Number(order.gstAmount) +
+        Number(order.shippingCharge) -
         Number(order.discount);
 
-      const msg =
-        encodeURIComponent(
+      const msg = encodeURIComponent(
+        `New Order Received!\n\nOrder ID: #${order.id.slice(-6).toUpperCase()}\n\nCustomer: ${order.customerName}\n\nPhone: ${order.customerPhone}\n\nAddress: ${order.address}\n\nPincode: ${order.pincode}\n\nItems:\n\n${itemsList}\n\nSubtotal: ₹${order.adminPrice}\n\nGST: ₹${order.gstAmount}\n\nShipping: ₹${order.shippingCharge}\n\nNet Amount: ₹${finalNet}\n\nDate: ${new Date(order.createdAt).toLocaleString()}`
+      );
 
-          `New Order Received!
-
-Order ID: #${order.id.slice(-6).toUpperCase()}
-
-Customer: ${order.customerName}
-
-Phone: ${order.customerPhone}
-
-Address: ${order.address}
-
-Pincode: ${order.pincode}
-
-Items:
-
-${itemsList}
-
-Subtotal: ₹${order.adminPrice}
-
-GST: ₹${order.gstAmount}
-
-Shipping: ₹${order.shippingCharge}
-
-Net Amount: ₹${finalNet}
-
-Date: ${new Date(order.createdAt).toLocaleString()}`
-
-        );
-
-      window.location.href =
-
-        `whatsapp://send?phone=916306748500&text=${msg}`;
+      window.location.href = `whatsapp://send?phone=916306748500&text=${msg}`;
 
       clear?.();
-
-      localStorage.removeItem(
-        "sl_cart"
-      );
-
+      localStorage.removeItem("sl_cart");
       navigate("/");
-
-    }
-
-    catch (err: any) {
-
-      console.error(
-        "Checkout Error:",
-        err
-      );
-
-      alert(
-
-        "Order failed! " +
-
-        (
-          err.response?.data?.message ||
-
-          err.message
-
-        )
-
-      );
-
-    }
-
-    finally {
-
+    } catch (err: any) {
+      console.error("Checkout Error:", err);
+      alert("Order failed! " + (err.response?.data?.message || err.message));
+    } finally {
       setLoading(false);
-
     }
-
   };
 
   return (
-
     <Box
-
       sx={{
-
         minHeight: "80vh",
-
         display: "flex",
-
         flexDirection: "column",
-
         alignItems: "center",
-
         justifyContent: "center",
-
         gap: 3,
-
         px: 2,
-
         position: "relative"
-
       }}
-
     >
-
       <Button
         startIcon={<ArrowBackIos sx={{ fontSize: '0.62rem !important' }} />}
         onClick={() => navigate(-1)}
@@ -431,170 +217,61 @@ Date: ${new Date(order.createdAt).toLocaleString()}`
       </Button>
 
       <Typography
-
         variant="h4"
-
         sx={{
-
           fontWeight: "bold",
-
           color: "#4A0E17"
-
         }}
-
       >
-
         Checkout
-
       </Typography>
 
-
       <Box
-
         sx={{
-
           width: "100%",
-
           maxWidth: "420px",
-
           background: "#fff",
-
           border: "1px solid #e5d7c1",
-
           borderRadius: "14px",
-
           padding: "24px",
-
-          boxShadow:
-
-            "0 4px 18px rgba(0,0,0,.06)"
-
+          boxShadow: "0 4px 18px rgba(0,0,0,.06)"
         }}
-
       >
-
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          mb={1}
-        >
-
-          <Typography>
-
-            Subtotal
-
-          </Typography>
-
-          <Typography
-            fontWeight={600}
-          >
-
-            ₹{subtotal.toFixed(2)}
-
-          </Typography>
-
+        <Box display="flex" justifyContent="space-between" mb={1}>
+          <Typography>Subtotal</Typography>
+          <Typography fontWeight={600}>₹{subtotal.toFixed(2)}</Typography>
         </Box>
 
-
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          mb={1}
-        >
-
-          <Typography>
-
-            GST
-
-          </Typography>
-
-          <Typography
-            fontWeight={600}
-          >
-
-            ₹{gst.toFixed(2)}
-
-          </Typography>
-
+        <Box display="flex" justifyContent="space-between" mb={1}>
+          <Typography>GST</Typography>
+          <Typography fontWeight={600}>₹{gst.toFixed(2)}</Typography>
         </Box>
 
-
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          mb={2}
-        >
-
-          <Typography>
-
-            Shipping
-
+        <Box display="flex" justifyContent="space-between" mb={2}>
+          <Typography>Shipping</Typography>
+          <Typography fontWeight={600}>
+            {shippingLoading ? (
+              <CircularProgress size={16} />
+            ) : (
+              `₹${shipping.toFixed(2)}`
+            )}
           </Typography>
-
-          <Typography
-            fontWeight={600}
-          >
-
-            {
-              shippingLoading
-                ? (
-                  <CircularProgress
-                    size={16}
-                  />
-                )
-                : `₹${shipping.toFixed(2)}`
-            }
-
-
-          </Typography>
-
         </Box>
 
-
         <Box
-
           sx={{
-
-            borderTop:
-
-              "1px solid #eee",
-
+            borderTop: "1px solid #eee",
             paddingTop: "16px"
-
           }}
-
           display="flex"
-
           justifyContent="space-between"
-
         >
-
-          <Typography
-            fontWeight={700}
-          >
-
-            Total Payable
-
-          </Typography>
-
-          <Typography
-
-            fontWeight={700}
-
-            color="#4A0E17"
-
-            fontSize="22px"
-
-          >
-
+          <Typography fontWeight={700}>Total Payable</Typography>
+          <Typography fontWeight={700} color="#4A0E17" fontSize="22px">
             ₹{finalTotal.toFixed(2)}
-
           </Typography>
-
         </Box>
-
       </Box>
-
 
       <Box
         sx={{
@@ -636,62 +313,28 @@ Date: ${new Date(order.createdAt).toLocaleString()}`
         </Box>
       </Box>
 
-
       <Button
-
         variant="contained"
-
         size="large"
-
         disabled={loading || shippingLoading}
         onClick={handlePlaceOrder}
-
         sx={{
-
           bgcolor: "#4A0E17",
-
           py: 2,
-
           px: 5,
-
           borderRadius: 2,
-
           fontSize: "1.1rem",
-
           "&:hover": {
-
             bgcolor: "#6e1e2b"
-
           }
-
         }}
-
       >
-
-        {
-
-          loading
-
-            ?
-
-            <CircularProgress
-
-              size={24}
-
-              color="inherit"
-
-            />
-
-            :
-
-            "PLACE ORDER VIA WHATSAPP"
-
-        }
-
+        {loading ? (
+          <CircularProgress size={24} color="inherit" />
+        ) : (
+          "PLACE ORDER VIA WHATSAPP"
+        )}
       </Button>
-
     </Box>
-
   );
-
 }

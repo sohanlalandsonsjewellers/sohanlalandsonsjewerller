@@ -8,7 +8,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
 import AdminLayout from "../../components/Admin/AdminLayout";
-import { getAllOrders, updateOrderStatus, deleteOrder } from "../../api/orderService";
+import { getAllOrders, updateOrderStatus, deleteOrder } from "../../api/orderApi";
 
 const ORDERS_PER_PAGE = 10;
 

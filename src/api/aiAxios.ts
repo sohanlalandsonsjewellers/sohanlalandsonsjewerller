@@ -4,23 +4,15 @@ console.log("AI BASE URL =", process.env.REACT_APP_AI_API_BASE_URL);
 
 const aiAxios = axios.create({
   baseURL: process.env.REACT_APP_AI_API_BASE_URL,
-  withCredentials: true
+  withCredentials: true, // Sends HttpOnly access_token cookie automatically
 });
 
 aiAxios.interceptors.request.use(
   (config) => {
-
     console.log("REQUEST URL =>", `${config.baseURL}${config.url}`);
-
-    const token = localStorage.getItem("sls_token");
-
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-
+    // No need to manually attach Bearer token from localStorage anymore
     return config;
   },
-
   (error) => Promise.reject(error)
 );
 
